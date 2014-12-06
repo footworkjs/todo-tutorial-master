@@ -1,0 +1,26 @@
+@import "deps/reset.less";
+@import "deps/mixins.less";
+
+@bodyBackgroundColor: #f5f5f5;
+
+body {
+  background: @bodyBackgroundColor;
+  color: contrast(@bodyBackgroundColor);
+  font: 14px arial;
+}
+
+main {
+  max-width: 940px;
+  margin: 0 auto;
+
+  & > .content {
+    border: 1px solid #ddd;
+    margin: 10px;
+    padding: 10px;
+    .border-radius(3px);
+  }
+}
+
+.page-title {
+  font-size: 20px;
+}

@@ -1,0 +1,14 @@
+{
+  "name": "footwork-todo-tutorial",
+  "version": "1.0.0",
+  "description": "footwork.js todo tutorial code",
+  "homepage": "http://todo-tutorial.footworkjs.com/step1",
+  "author": "Jonathan Newman <jonathan@staticty.pe>",
+  "dependencies": {},
+  "devDependencies": {
+    "footwork": "https://github.com/reflectiveSingleton/footwork.git#6e20a288ef337cb2882532b28af8eb198f8e96ee",
+    "less.js": "*",
+    "requirejs": "*",
+    "requirejs-text": "*"
+  }
+}
