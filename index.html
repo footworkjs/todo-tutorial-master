@@ -2,22 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TODO Tutorial App</title>
     <link rel="stylesheet/less" type="text/css" href="/css/style.less">
     <script src="/bower_components/less.js/dist/less.js"></script>
-
     <script src="/bower_components/footwork/dist/footwork-all.js"></script>
   </head>
 
   <body>
-
     <main>
-      <div class="content">
-        <h1 class="page-title">Things to do...</h1>
+      <form>
+        <input type="text" name="thingToDo" placeholder="What needs to be done?">
+        <input type="submit" value="Add Item" class="button">
+      </form>
+      <div class="todo-list">
+        <div class="todo">Nothing to do.</div>
       </div>
     </main>
-
   </body>
 </html>
