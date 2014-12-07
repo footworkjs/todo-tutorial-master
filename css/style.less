@@ -45,6 +45,16 @@ main {
   .todo-list {
     padding: 10px 10px 0 0px;
     border-top: 1px solid #ddd;
+
+    .todo {
+      padding: 5px 10px;
+      border: 1px solid #ddd;
+      .border-radius(3px);
+    }
+
+    .todo + .todo {
+      margin-top: 5px;
+    }
   }
 }
 
