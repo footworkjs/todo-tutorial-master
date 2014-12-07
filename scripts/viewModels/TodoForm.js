@@ -1,4 +1,4 @@
-var TodoForm = fw.viewModel({
+fw.viewModel({
   namespace: 'TodoForm',
   autoRegister: true,
   initialize: function() {
