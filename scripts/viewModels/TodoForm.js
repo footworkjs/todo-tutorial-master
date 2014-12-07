@@ -2,7 +2,7 @@ var TodoForm = fw.viewModel({
   initialize: function() {
     this.thingToDo = fw.observable();
     this.submitForm = function() {
-      console.info('submit', arguments);
+      console.info('TodoForm submit action triggered');
     };
   }
 });
