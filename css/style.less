@@ -4,6 +4,9 @@
 @import "deps/icon-font.less";
 
 @bodyBackgroundColor: #f5f5f5;
+@incompleteStatusColor: #e2e2e2;
+@rowHeight: 30px;
+@controlWidth: 40px;
 
 body {
   background: @bodyBackgroundColor;
@@ -21,9 +24,22 @@ main {
   .border-radius(3px);
 
   form {
-    @rowHeight: 30px;
     line-height: @rowHeight;
     .clearblock;
+
+    .icon-chevron-down {
+      float: left;
+      font-size: 25px;
+      line-height: @rowHeight;
+      width: @controlWidth;
+      text-align: center;
+      cursor: pointer;
+      color: @incompleteStatusColor;
+
+      &:hover {
+        color: darken(@incompleteStatusColor, 10%);
+      }
+    }
 
     input {
       line-height: @rowHeight;
@@ -56,14 +72,20 @@ main {
       .border-radius(3px);
       .clearblock;
 
-      .status, .text {
+      &:hover {
+        .clear {
+          display: block;
+        }
+      }
+
+      .status, .text, .clear {
         float: left;
         line-height: @todoHeight;
       }
 
-      @incompleteStatusColor: #e2e2e2;
       .status {
-        padding: 0 10px;
+        width: @controlWidth;
+        text-align: center;
         cursor: pointer;
         color: @incompleteStatusColor;
 
@@ -74,6 +96,19 @@ main {
 
       .text {
         font-size: 20px;
+      }
+
+      .clear {
+        display: none;
+        float: right;
+        width: @controlWidth;
+        text-align: center;
+        cursor: pointer;
+        color: #b3b3b3;
+
+        &:hover {
+          color: black;
+        }
       }
     }
 
