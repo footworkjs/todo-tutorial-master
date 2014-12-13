@@ -7,7 +7,7 @@
  * how to dynamically load these from disk.
  */
 var TodoFormHTML = '<form data-bind="submit: submitForm">\
-  <input type="text" name="thingToDo" data-bind="value: thingToDo" placeholder="What needs to be done?">\
+  <input type="text" name="thingToDo" data-bind="value: thingToDo" placeholder="What needs to be done?" autofocus>\
   <input type="submit" value="Add Item" class="button">\
 </form>';
 
