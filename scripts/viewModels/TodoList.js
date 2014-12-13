@@ -1,4 +1,4 @@
-fw.viewModel({
+var TodoList = fw.viewModel({
   namespace: 'TodoList',
   autoRegister: true,
   initialize: function() {
@@ -7,6 +7,7 @@ fw.viewModel({
 
     // listen for any 'newItem' messages broadcast on our namespace.
     this.$namespace.subscribe('newItem', function(thingToDo) {
+      // JSON object representing new thingToDo was received, lets create a new TodoItem based on it
       self.todos.push( new TodoItem(thingToDo) );
     });
   }
