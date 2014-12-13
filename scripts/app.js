@@ -1,3 +1,7 @@
+/**
+ * Configure RequireJS, telling it where the text plugin (used to load templates) and
+ * footwork are located.
+ */
 requirejs.config({
   paths: {
     "text": "/bower_components/requirejs-text/text",
