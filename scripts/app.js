@@ -15,7 +15,15 @@ require(['footwork'],
       viewModel: '/scripts/viewModels/TodoForm.js',
       template: '/scripts/templates/TodoForm.html'
     });
-    fw.viewModels.registerLocation('TodoList', '/scripts/viewModels/');
+
+    /**
+     * Tell footwork it can find both the 'Main' and 'TodoList' viewModels
+     * inside of /scripts/viewModels.
+     */
+    fw.viewModels.registerLocation([
+      'Main',
+      'TodoList'
+    ], '/scripts/viewModels/');
 
     // tell footwork to startup and begin binding
     fw.start();
