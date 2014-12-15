@@ -17,13 +17,16 @@ require(['footwork'],
     });
 
     /**
-     * Tell footwork it can find both the 'Main' and 'TodoList' viewModels
+     * Tell footwork it can find the 'Main', 'Login', and 'TodoList' viewModels
      * inside of /scripts/viewModels.
      */
     fw.viewModels.registerLocation([
       'Main',
+      'Login',
       'TodoList'
     ], '/scripts/viewModels/');
+
+    fw.outlets.registerViewLocation([ 'login-page', 'todo-page' ], '/scripts/views/');
 
     // tell footwork to startup and begin binding
     fw.start();

@@ -10,19 +10,11 @@
 
   <body>
     <viewModel module="Main"> <!-- new 'Main' viewModel which has our router -->
+      <header>
+        <div class="title">Things To Do...</div>
+      </header>
       <main>
-        <todoform></todoform>
-        <viewModel module="TodoList">
-          <div class="todo-list">
-            <div class="todos" data-bind="foreach: todos">
-              <div class="todo">
-                <div class="status icon-check"></div>
-                <div class="text" data-bind="text: thingToDo"></div>
-                <div class="clear icon-x"></div>
-              </div>
-            </div>
-          </div>
-        </viewModel>
+        <outlet name="mainView"></outlet> <!-- HTML replaced with outlet -->
       </main>
     </viewModel>
     <script src="bower_components/requirejs/require.js" data-main="scripts/app"></script>

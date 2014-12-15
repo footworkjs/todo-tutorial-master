@@ -9,6 +9,6 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
           self.todos.push( new TodoItem(thingToDo) );
         });
       }
-    });    
+    });
   }
 );
