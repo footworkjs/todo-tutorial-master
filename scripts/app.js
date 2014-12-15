@@ -26,7 +26,11 @@ require(['footwork'],
       'TodoList'
     ], '/scripts/viewModels/');
 
-    fw.outlets.registerViewLocation([ 'login-page', 'todo-page' ], '/scripts/views/');
+    // Tell footwork it can find the login-page and todo-page inside of /scripts/views/
+    fw.outlets.registerViewLocation([
+      'login-page',
+      'todo-page'
+    ], '/scripts/views/');
 
     // tell footwork to startup and begin binding
     fw.start();
