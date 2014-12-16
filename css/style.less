@@ -25,6 +25,8 @@ header, main {
 }
 
 main {
+  .clearblock;
+
   form {
     line-height: @rowHeight;
     .clearblock;
@@ -58,6 +60,17 @@ main {
       &[type="text"], &[type="password"] {
         border: 1px solid #ddd;
         .border-radius(3px);
+      }
+    }
+
+    &.login {
+      float: left;
+      margin: 50px;
+      
+      .button {
+        margin: 10px 10px 0 0;
+        clear: both;
+        float: right;
       }
     }
 
