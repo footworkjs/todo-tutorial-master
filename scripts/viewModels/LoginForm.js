@@ -1,12 +1,12 @@
 define(['footwork'],
   function(fw) {
     return fw.viewModel({
-      namespace: 'Login',
+      namespace: 'LoginForm',
       initialize: function() {
         this.username = fw.observable();
         this.password = fw.observable();
         this.loginUser = function() {
-          return false;
+          console.info('Login form submitted!');
         };
       }
     });
