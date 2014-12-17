@@ -26,8 +26,9 @@ define(['footwork'],
         // Create reference to the viewModel we will use in the callback
         var self = this;
 
-        // The handler which receives the 'userLogin' event
+        // Create the event handler which receives the 'userLogin' event
         this.$namespace.event.handler('userLogin', function() {
+          // Tell the router to route to '/todo'
           self.$router.setState('/todo');
         });
       }
