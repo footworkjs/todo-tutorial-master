@@ -13,7 +13,7 @@ define(['footwork'],
         this.password = fw.observable();
         this.loginUser = function() {
           // Tell the Main viewModel what user has logged in
-          this.mainNamespace.command('userLogin', this.username());
+          this.mainNamespace.trigger('userLogin', this.username());
         };
       }
     });
