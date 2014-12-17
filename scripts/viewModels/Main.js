@@ -27,7 +27,7 @@ define(['footwork'],
         var self = this;
 
         // The handler which receives the 'userLogin' event
-        this.$namespace.event.handler('userLogin', function(userName) {
+        this.$namespace.event.handler('userLogin', function() {
           self.$router.setState('/todo');
         });
       }
