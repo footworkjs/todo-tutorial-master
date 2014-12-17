@@ -15,46 +15,108 @@ body {
   padding: 0 10px;
 }
 
-main {
+header, main {
   max-width: 940px;
   margin: 10px auto;
   padding: 10px;
   background: white;
   border: 1px solid #ddd;
+  line-height: 30px;
+  font-weight: bold;
   .border-radius(3px);
+  .clearblock;
+
+  & > .title {
+    float: left;
+  }
+
+  .logout {
+    float: right;
+    text-decoration: none;
+  }
+}
+
+main {
+  .clearblock;
 
   form {
     line-height: @rowHeight;
     .clearblock;
 
-    .icon-chevron-down {
-      float: left;
-      font-size: 25px;
+    label {
       line-height: @rowHeight;
-      width: @controlWidth;
-      text-align: center;
-      cursor: pointer;
-      color: @incompleteStatusColor;
+      height: @rowHeight;
+      display: block;
+      float: left;
+      clear: left;
 
-      &:hover {
-        color: darken(@incompleteStatusColor, 10%);
+      & > span {
+        float: left;
+        width: 100px;
+        text-align: right;
+        margin-right: 10px;
       }
+    }
+
+    label + label {
+      margin-top: 10px;
     }
 
     input {
       line-height: @rowHeight;
       height: @rowHeight;
-      display: block;
-      float: left;
       padding: 0 5px;
       margin: 0 10px 10px 0;
       .box-sizing(border-box);
 
-      &[type="text"] {
-        width: 300px;
-        max-width: 100%;
+      &[type="text"], &[type="password"] {
         border: 1px solid #ddd;
         .border-radius(3px);
+      }
+    }
+
+    &.login {
+      float: left;
+      margin: 25px;
+      padding: 0 5px 15px 0;
+      border: 1px solid #ddd;
+      .border-radius(3px);
+      .box-shadow(0 1px 3px -1px black);
+
+      .title {
+        text-align: right;
+        padding-right: 10px;
+        color: #aaa;
+        line-height: 40px;
+      }
+
+      .button {
+        margin: 10px 10px 0 0;
+        clear: both;
+        float: right;
+      }
+    }
+
+    &.todo {
+      .icon-chevron-down {
+        float: left;
+        font-size: 25px;
+        line-height: @rowHeight;
+        width: @controlWidth;
+        text-align: center;
+        cursor: pointer;
+        color: @incompleteStatusColor;
+
+        &:hover {
+          color: darken(@incompleteStatusColor, 10%);
+        }
+      }
+
+      input[type="text"] {
+        display: block;
+        float: left;
+        width: 300px;
+        max-width: 100%;
       }
     }
   }
