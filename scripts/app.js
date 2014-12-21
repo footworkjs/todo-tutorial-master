@@ -21,10 +21,15 @@ require(['footwork'],
      * inside of /scripts/viewModels.
      */
     fw.viewModels.registerLocation([
-      'Main',
       'LoginForm',
       'TodoList'
     ], '/scripts/viewModels/');
+
+    /**
+     * Register the location of the 'MainRouter'
+     * Loads from /scripts/MainRouter.js
+     */
+    fw.routers.registerLocation('MainRouter', '/scripts/');
 
     // Tell footwork it can find the login-page and todo-page inside of /scripts/views/
     fw.outlets.registerViewLocation([

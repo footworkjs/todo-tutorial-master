@@ -12,7 +12,7 @@
   </head>
 
   <body>
-    <viewModel module="Main"> <!-- new 'Main' viewModel which has our router -->
+    <router module="MainRouter"> <!-- new 'MainRouter' declaration -->
       <header>
         <div class="title">Things To Do...</div>
 
@@ -22,7 +22,7 @@
       <main>
         <outlet name="mainView"></outlet> <!-- HTML replaced with outlet -->
       </main>
-    </viewModel>
+    </router>
     <script src="bower_components/requirejs/require.js" data-main="scripts/app"></script>
   </body>
 </html>

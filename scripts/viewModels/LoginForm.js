@@ -7,13 +7,13 @@ define(['footwork'],
          * Create a new namespace instance we will use to
          * communicate with the Main viewModel.
          */
-        this.mainNamespace = fw.namespace('Main');
+        this.mainRouterNamespace = fw.namespace('MainRouter');
 
         this.username = fw.observable();
         this.password = fw.observable();
         this.loginUser = function() {
           // Tell the Main viewModel what user has logged in
-          this.mainNamespace.trigger('userLogin');
+          this.mainRouterNamespace.trigger('userLogin');
         };
       }
     });
