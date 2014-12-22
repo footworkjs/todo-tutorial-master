@@ -2,6 +2,11 @@ define(['footwork'],
   function(fw) {
     return fw.router({
       namespace: 'MainRouter',
+
+      /**
+       * Add the initialize method which is called when the MainRouter is instantiated.
+       * We then setup the event handler for 'userLogin' messages received on this.$namespace
+       */
       initialize: function() {
         // Create reference to the router we will use in the callback
         var router = this;
@@ -12,6 +17,7 @@ define(['footwork'],
           router.setState('/todo');
         });
       },
+
       routes: [
         {
           route: '/',

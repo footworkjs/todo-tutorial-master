@@ -17,12 +17,12 @@ require(['footwork'],
     });
 
     /**
-     * Tell footwork it can find the 'Main', 'LoginForm', and 'TodoList' viewModels
+     * Tell footwork it can find the 'LoginForm' and 'TodoList' viewModels
      * inside of /scripts/viewModels.
      */
     fw.viewModels.registerLocation([
-      'LoginForm',
-      'TodoList'
+      'LoginForm', // will load from /scripts/viewModels/LoginForm.js
+      'TodoList' // will load from /scripts/viewModels/TodoList.js
     ], '/scripts/viewModels/');
 
     /**
@@ -33,8 +33,8 @@ require(['footwork'],
 
     // Tell footwork it can find the login-page and todo-page inside of /scripts/views/
     fw.outlets.registerViewLocation([
-      'login-page',
-      'todo-page'
+      'login-page', // will load from /scripts/views/login-page.html
+      'todo-page' // will load from /scripts/views/todo-page.html
     ], '/scripts/views/');
 
     // tell footwork to startup and begin binding
