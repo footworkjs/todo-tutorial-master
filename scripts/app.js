@@ -11,6 +11,7 @@ requirejs.config({
 
 require(['footwork'],
   function(fw) {
+    // Tell footwork where it can find the TodoForm component assets.
     fw.components.registerLocation('todoform', {
       viewModel: '/scripts/viewModels/TodoForm.js',
       template: '/scripts/templates/TodoForm.html'
