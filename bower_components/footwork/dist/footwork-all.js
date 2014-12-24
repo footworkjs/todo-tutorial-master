@@ -7156,7 +7156,7 @@ if (typeof JSON !== 'object') {
 		console = window.console||undefined, // Prevent a JSLint complain
 		document = window.document, // Make sure we are using the correct document
 		navigator = window.navigator, // Make sure we are using the correct navigator
-		sessionStorage = window.sessionStorage||false, // sessionStorage
+		sessionStorage = false, // sessionStorage
 		setTimeout = window.setTimeout,
 		clearTimeout = window.clearTimeout,
 		setInterval = window.setInterval,
@@ -7167,6 +7167,7 @@ if (typeof JSON !== 'object') {
 		history = window.history; // Old History Object
 
 	try {
+		sessionStorage = window.sessionStorage; // This will throw an exception in some browsers when cookies/localStorage are explicitly disabled (i.e. Chrome)
 		sessionStorage.setItem('TEST', '1');
 		sessionStorage.removeItem('TEST');
 	} catch(e) {
@@ -8066,11 +8067,7 @@ if (typeof JSON !== 'object') {
 		 * @return {Boolean}
 		 */
 		History.isTraditionalAnchor = function(url_or_hash){
-			// Check
-			var isTraditional = !(/[\/\?\.]/.test(url_or_hash));
-
-			// Return
-			return isTraditional;
+            return false;
 		};
 
 		/**
@@ -9271,6 +9268,25 @@ if (typeof JSON !== 'object') {
       }).call(root);
     }
 
+    (function(window) {
+      // Console-polyfill. MIT license.
+// https://github.com/paulmillr/console-polyfill
+// Make it safe to do console.log() always.
+(function(con) {
+  'use strict';
+  var prop, method;
+  var empty = {};
+  var dummy = function() {};
+  var properties = 'memory'.split(',');
+  var methods = ('assert,clear,count,debug,dir,dirxml,error,exception,group,' +
+     'groupCollapsed,groupEnd,info,log,markTimeline,profile,profiles,profileEnd,' +
+     'show,table,time,timeEnd,timeline,timelineEnd,timeStamp,trace,warn').split(',');
+  while (prop = properties.pop()) con[prop] = con[prop] || empty;
+  while (method = methods.pop()) con[method] = con[method] || dummy;
+})(this.console = this.console || {}); // Using `this` for web workers.
+
+    }).call(root, windowObject);
+
     // list of dependencies to export from the library as .embed properties
     var embeddedDependencies = [ '_', 'ko', 'riveter', 'postal' ];
 
@@ -9291,6 +9307,7 @@ fw.embed = embedded;
 // misc regex patterns
 var hasTrailingSlash = /\/$/i;
 var hasStartingSlash = /^\//i;
+var hasStartingHash = /^#/i;
 
 // misc utility functions
 var noop = function() { };
@@ -9304,6 +9321,10 @@ function isPath(pathOrFile) {
 function hasPathStart(path) {
   return hasStartingSlash.test(path);
 };
+
+function hasHashStart(string) {
+  return hasStartingHash.test(string);
+}
 
 function hasClass(element, className) {
   return element.className.match( new RegExp('(\\s|^)' + className + '(\\s|$)') );
@@ -9809,6 +9830,7 @@ var $baseRouter = {
   segment: emptyStringResult,
   childRouters: fw.observableArray(),
   context: noop,
+  userInitialize: noop,
   __isRouter: true
 };
 
@@ -9844,7 +9866,10 @@ function routeStringToRegExp(routeString) {
 
 function historyIsReady() {
   var isReady = has(History, 'Adapter');
-  if(isReady && isUndefined(History.Adapter.unbind)) {
+
+  if(isReady && !History.Adapter.isSetup) {
+    History.Adapter.isSetup = true;
+
     // why .unbind() is not already present in History.js is beyond me
     History.Adapter.unbind = function(callback) {
       each(History.Adapter.handlers, function(handler) {
@@ -9963,11 +9988,20 @@ var isFullURL = fw.isFullURL = function(thing) {
   return isString(thing) && isFullURLRegex.test(thing);
 };
 
+var hasHTML5History = windowObject.history && windowObject.history.pushState;
+if(!isUndefined(windowObject.History) && isObject(windowObject.History.options) && windowObject.History.options.html4Mode) {
+  // user is overriding to force html4mode hash-based history
+  hasHTML5History = false;
+}
+
 var fwRouters = fw.routers = {
   // Configuration point for a baseRoute / path which will always be stripped from the URL prior to processing the route
   baseRoute: fw.observable(''),
   activeRouteClassName: fw.observable('active'),
   disableHistory: fw.observable(false).broadcastAs({ name: 'disableHistory', namespace: $globalNamespace }),
+  html5History: function() {
+    return hasHTML5History;
+  },
 
   getNearestParent: function($context) {
     var $parentRouter = nearestParentRouter($context);
@@ -10003,8 +10037,10 @@ var fwRouters = fw.routers = {
   }
 };
 
-fw.router = function( routerConfig, $viewModel, $context ) {
-  return new Router( routerConfig, $viewModel, $context );
+fw.router = function( routerConfig ) {
+  return makeViewModel({
+    router: routerConfig
+  });
 };
 
 fw.bindingHandlers.$route = {
@@ -10013,11 +10049,19 @@ fw.bindingHandlers.$route = {
     var urlValue = valueAccessor();
     var elementIsSetup = false;
     var stateTracker = null;
+    var hashOnly = null;
 
     var routeHandlerDescription = {
       on: 'click',
       url: function defaultURLForRoute() { return null; },
+      addActiveClass: true,
+      activeClass: null,
       handler: function defaultHandlerForRoute(event, url) {
+        if(hashOnly) {
+          windowObject.location.hash = routeHandlerDescription.url;
+          return false;
+        }
+
         if( !isFullURL(url) && event.which !== 2 ) {
           event.preventDefault();
           return true;
@@ -10053,11 +10097,23 @@ fw.bindingHandlers.$route = {
 
         if( !isFullURL(myLinkPath) ) {
           if( !hasPathStart(myLinkPath) ) {
-            myLinkPath = '/' + myLinkPath;
+            if(hasHashStart(myLinkPath)) {
+              var currentRoute = $myRouter.currentRoute();
+              if(!isNull(currentRoute)) {
+                myLinkPath = $myRouter.currentRoute().segment + myLinkPath;
+              }
+              hashOnly = true;
+            } else {
+              myLinkPath = '/' + myLinkPath;
+            }
           }
 
           if( includeParentPath && !isNullRouter($myRouter) ) {
             myLinkPath = $myRouter.parentRouter().path() + myLinkPath;
+
+            if(fwRouters.html5History() === false) {
+              myLinkPath = '#' + (myLinkPath.indexOf('/') === 0 ? myLinkPath.substring(1) : myLinkPath);
+            }
           }
         }
 
@@ -10070,23 +10126,25 @@ fw.bindingHandlers.$route = {
     var routeURLWithoutParentPath = getRouteURL.bind(null, false);
 
     function checkForMatchingSegment(mySegment, newRoute) {
-      var activeRouteClassName = fwRouters.activeRouteClassName();
-      if(mySegment === '/') {
-        mySegment = '';
-      }
-      
-      if(!isNull(newRoute) && newRoute.segment === mySegment && isString(activeRouteClassName) && activeRouteClassName.length) {
-        // newRoute.segment is the same as this routers segment...add the activeRouteClassName to the element to indicate it is active
-        addClass(element, activeRouteClassName);
-      } else if( hasClass(element, activeRouteClassName) ) {
-        removeClass(element, activeRouteClassName);
+      if(routeHandlerDescription.addActiveClass) {
+        var activeRouteClassName = routeHandlerDescription.activeClass || fwRouters.activeRouteClassName();
+        if(mySegment === '/') {
+          mySegment = '';
+        }
+        
+        if(!isNull(newRoute) && newRoute.segment === mySegment && isString(activeRouteClassName) && activeRouteClassName.length) {
+          // newRoute.segment is the same as this routers segment...add the activeRouteClassName to the element to indicate it is active
+          addClass(element, activeRouteClassName);
+        } else if( hasClass(element, activeRouteClassName) ) {
+          removeClass(element, activeRouteClassName);
+        }
       }
     };
 
     function setUpElement() {
       var myCurrentSegment = routeURLWithoutParentPath();
       if( element.tagName.toLowerCase() === 'a' ) {
-        element.href = routeURLWithParentPath();
+        element.href = (fwRouters.html5History() ? '' : '/') + routeURLWithParentPath();
       }
 
       if( isObject(stateTracker) ) {
@@ -10207,10 +10265,20 @@ var Router = function( routerConfig, $viewModel, $context ) {
   }
   this.setRoutes( routerConfig.routes );
 
+  if( isFunction(routerConfig.initialize) ) {
+    this.userInitialize = function() {
+      this.$namespace.enter();
+      routerConfig.initialize.call(this);
+      this.$namespace.exit();
+      return this;
+    }.bind(this);
+  }
+
   if( routerConfig.activate === true ) {
     subscriptions.push(this.context.subscribe(function activateRouterAfterNewContext( $context ) {
       if( isObject($context) ) {
-        this.activate( $context );
+        this
+          .activate( $context );
       }
     }, this));
   }
@@ -10235,7 +10303,7 @@ Router.prototype.activate = function($context, $parentRouter) {
   if( this.currentState() === '' ) {
     this.setState();
   }
-  return this;
+  return this.userInitialize();
 };
 
 var doNotPushOntoHistory = true;
@@ -10247,13 +10315,14 @@ Router.prototype.setState = function(url) {
       try {
         historyAPIWorked = History.pushState(null, '', this.parentRouter().path() + url);
       } catch(error) {
+        console.error(error);
         historyAPIWorked = false;
       } finally {
         if(historyAPIWorked) {
           return;
         }
       }
-    } else {
+    } else if(isFunction(History.getState)) {
       this.currentState( this.normalizeURL( History.getState().url ) );
     }
   } else if(isString(url)) {
@@ -10277,7 +10346,11 @@ Router.prototype.startup = function( $context, $parentRouter ) {
   if( !this.historyIsEnabled() ) {
     if( historyIsReady() && !this.disableHistory() ) {
       History.Adapter.bind( windowObject, 'popstate', this.stateChangeHandler = function(event) {
-        this.currentState( this.normalizeURL(windowObject.location.pathname + windowObject.location.hash) );
+        if(!fwRouters.html5History() && windowObject.location.pathname === '/' && windowObject.location.hash.length > 1) {
+          this.currentState( this.normalizeURL('/' + windowObject.location.hash.substring(1)) );
+        } else {
+          this.currentState( this.normalizeURL(windowObject.location.pathname + windowObject.location.hash) );
+        }
       }.bind(this));
       this.historyIsEnabled(true);
     } else {
@@ -10310,7 +10383,12 @@ Router.prototype.dispose = function() {
 Router.prototype.normalizeURL = function(url) {
   var urlParts = parseUri(url);
   this.urlParts(urlParts);
-  url = urlParts.path;
+
+  if(!fwRouters.html5History() && urlParts.path === '/') {
+    url = '/' + urlParts.anchor;
+  } else {
+    url = urlParts.path;
+  }
 
   if( !isNull(this.config.baseRoute) && url.indexOf(this.config.baseRoute) === 0 ) {
     url = url.substr(this.config.baseRoute.length);
@@ -10656,28 +10734,33 @@ fw.bindingHandlers.component.init = function(element, valueAccessor, allBindings
   var theValueAccessor = valueAccessor;
   if( isString(element.tagName) ) {
     var tagName = element.tagName.toLowerCase();
-    if( tagName === 'viewmodel' ) {
+    if( tagName === 'viewmodel' || tagName === 'router' ) {
       var values = valueAccessor();
-      var viewModelName = ( !isUndefined(values.params) ? fw.unwrap(values.params.name) : undefined ) || element.getAttribute('module') || element.getAttribute('data-module');
+      var moduleName = ( !isUndefined(values.params) ? fw.unwrap(values.params.name) : undefined ) || element.getAttribute('module') || element.getAttribute('data-module');
       var bindViewModel = bindComponentViewModel.bind(null, element, values.params);
 
-      if( !isUndefined(viewModelName) ) {
+      var isRegistered = (tagName === 'viewmodel' ? isRegisteredViewModel : isRegisteredRouter);
+      var getRegistered = (tagName === 'viewmodel' ? getRegisteredViewModel : getRegisteredRouter);
+      var getResourceLocation = (tagName === 'viewmodel' ? getViewModelResourceLocation : getRouterResourceLocation);
+      var getFileName = (tagName === 'viewmodel' ? getViewModelFileName : getRouterFileName);
+
+      if( !isUndefined(moduleName) ) {
         var resourceLocation = null;
 
-        if( isRegisteredViewModel(viewModelName) ) {
+        if( isRegistered(moduleName) ) {
           // viewModel was manually registered, we preferentially use it
-          resourceLocation = getRegisteredViewModel(viewModelName);
-        } else if( isFunction(require) && isFunction(require.defined) && require.defined(viewModelName) ) {
+          resourceLocation = getRegistered(moduleName);
+        } else if( isFunction(require) && isFunction(require.defined) && require.defined(moduleName) ) {
           // we have found a matching resource that is already cached by require, lets use it
-          resourceLocation = viewModelName;
+          resourceLocation = moduleName;
         } else {
-          resourceLocation = getViewModelResourceLocation(viewModelName);
+          resourceLocation = getResourceLocation(moduleName);
         }
 
         if( isString(resourceLocation) ) {
           if( isFunction(require) ) {
             if( isPath(resourceLocation) ) {
-              resourceLocation = resourceLocation + getViewModelFileName(viewModelName);
+              resourceLocation = resourceLocation + getFileName(moduleName);
             }
 
             require([ resourceLocation ], bindViewModel);
@@ -11103,6 +11186,10 @@ var registerLocationOfComponent = fw.components.registerLocation = function(comp
   componentResourceLocations[ componentName ] = componentDefaultLocation(componentLocation, false);
 };
 
+var locationIsRegisteredForComponent = fw.components.locationIsRegistered = function(componentName) {
+  return !isUndefined(componentResourceLocations[componentName]);
+};
+
 // Return the component resource definition for the supplied componentName
 var getComponentResourceLocation = fw.components.getResourceLocation = function(componentName) {
   if( isUndefined(componentName) ) {
@@ -11146,7 +11233,7 @@ var viewModelDefaultLocation = fw.viewModels.defaultLocation = function(path, up
     viewModelLocation = path;
   }
 
-  if(updateDefault) {
+  if(isUndefined(updateDefault) || updateDefault) {
     defaultViewModelLocation = viewModelLocation;
   }
 
@@ -11175,12 +11262,92 @@ var registerLocationOfViewModel = fw.viewModels.registerLocation = function(view
   viewModelResourceLocations[ viewModelName ] = viewModelDefaultLocation(viewModelLocation, false);
 };
 
+var locationIsRegisteredForViewModel = fw.viewModels.locationIsRegistered = function(viewModelName) {
+  return !isUndefined(viewModelResourceLocations[viewModelName]);
+};
+
 // Return the viewModel resource definition for the supplied viewModelName
 var getViewModelResourceLocation = fw.viewModels.getResourceLocation = function(viewModelName) {
   if( isUndefined(viewModelName) ) {
     return viewModelResourceLocations;
   }
   return viewModelResourceLocations[viewModelName] || getComponentResourceLocation(viewModelName).viewModels || defaultViewModelLocation;
+};
+
+
+// router resource section
+var defaultRouterFileExtensions = '.js';
+var routerFileExtensions = fw.viewModels.fileExtensions = fw.observable( defaultRouterFileExtensions );
+
+var getRouterFileName = fw.routers.getFileName = function(moduleName) {
+  var routerExtensions = routerFileExtensions();
+  var fileName = moduleName;
+
+  if( isFunction(routerExtensions) ) {
+    fileName += routerExtensions(moduleName);
+  } else if( isString(routerExtensions) ) {
+    fileName += routerExtensions;
+  }
+
+  if( !isUndefined( routerResourceLocations[moduleName] ) ) {
+    var registeredLocation = routerResourceLocations[moduleName];
+    if( isString(registeredLocation) && !isPath(registeredLocation) ) {
+      // full filename was supplied, lets return that
+      fileName = last( registeredLocation.split('/') );
+    }
+  }
+
+  return fileName;
+};
+
+var defaultRouterLocation = '/';
+var routerResourceLocations = fw.routers.resourceLocations = {};
+var routerDefaultLocation = fw.routers.defaultLocation = function(path, updateDefault) {
+  var routerLocation = defaultRouterLocation;
+
+  if( isString(path) ) {
+    routerLocation = path;
+  }
+
+  if(isUndefined(updateDefault) || updateDefault) {
+    defaultRouterLocation = routerLocation;
+  }
+
+  return routerLocation;
+};
+
+var registeredRouters = {};
+var registerRouter = fw.routers.register = function(moduleName, viewModel) {
+  registeredRouters[moduleName] = viewModel;
+};
+
+var isRegisteredRouter = fw.routers.isRegistered = function(moduleName) {
+  return !isUndefined( registeredRouters[moduleName] );
+};
+
+var getRegisteredRouter = fw.routers.getRegistered = function(moduleName) {
+  return registeredRouters[moduleName];
+};
+
+var registerLocationOfRouter = fw.routers.registerLocation = function(moduleName, routerLocation) {
+  if( isArray(moduleName) ) {
+    each(moduleName, function(name) {
+      registerLocationOfRouter(name, routerLocation);
+    });
+  }
+  routerResourceLocations[ moduleName ] = routerDefaultLocation(routerLocation, false);
+};
+
+var locationIsRegisteredForRouter = fw.routers.locationIsRegistered = function(moduleName) {
+  return !isUndefined(routerResourceLocations[moduleName]);
+};
+
+// Return the viewModel resource definition for the supplied moduleName
+var getRouterResourceLocation = fw.routers.getResourceLocation = function(moduleName) {
+  if( isUndefined(moduleName) ) {
+    return routerResourceLocations;
+  }
+  return routerResourceLocations[moduleName] || getComponentResourceLocation(moduleName).viewModels || defaultViewModelLocation;
 };
 // extenders.js
 // ----------------

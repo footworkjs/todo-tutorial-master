@@ -2,22 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TODO Tutorial App</title>
-    <link rel="stylesheet/less" type="text/css" href="/css/style.less">
-    <script src="/bower_components/less.js/dist/less.js"></script>
+    <link rel="stylesheet/less" type="text/css" href="css/style.less">
+    <script src="bower_components/less.js/dist/less.js"></script>
+    <link rel="icon" href="images/favicon.png">
 
-    <script src="/bower_components/footwork/dist/footwork-all.js"></script>
+    <!-- Force HTML4 (hash-based) routing -->
+    <script>window.History = { options: { html4Mode: true} };</script>
   </head>
 
   <body>
+    <router module="MainRouter"> <!-- new 'MainRouter' declaration -->
+      <header>
+        <div class="title">Things To Do...</div>
 
-    <main>
-      <div class="content">
-        <h1 class="page-title">Things to do...</h1>
-      </div>
-    </main>
-
+        <!-- new $route bound link -->
+        <a href="/" data-bind="$route" class="logout button">Logout</a>
+      </header>
+      <main>
+        <outlet name="mainView"></outlet> <!-- HTML replaced with outlet -->
+      </main>
+    </router>
+    <script src="bower_components/requirejs/require.js" data-main="scripts/app"></script>
   </body>
 </html>
