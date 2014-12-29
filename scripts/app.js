@@ -20,6 +20,10 @@ require(['footwork'],
       'TodoList' // will load from /scripts/viewModels/TodoList.js
     ], '/scripts/viewModels/');
 
+    /**
+     * Here we provide the entire filename to footwork because the lowercase
+     * 'todoform' does not match the file names on disk.
+     */
     fw.components.registerLocation('todoform', {
       viewModel: '/scripts/viewModels/TodoForm.js',
       template: '/scripts/templates/TodoForm.html'
