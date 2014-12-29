@@ -11,12 +11,20 @@ requirejs.config({
 
 require(['footwork'],
   function(fw) {
+    // Tell footwork where it can find the TodoList viewModel.
+    fw.viewModels.registerLocation('TodoList', '/scripts/viewModels/');
+
     // Tell footwork where it can find the TodoForm component assets.
     fw.components.registerLocation('todoform', {
       viewModel: '/scripts/viewModels/TodoForm.js',
       template: '/scripts/templates/TodoForm.html'
     });
-    fw.viewModels.registerLocation('TodoList', '/scripts/viewModels/');
+
+    /**
+     * Register the location of the 'MainRouter'
+     * Loads from /scripts/MainRouter.js
+     */
+    fw.routers.registerLocation('MainRouter', '/scripts/');
 
     // tell footwork to startup and begin binding
     fw.start();
