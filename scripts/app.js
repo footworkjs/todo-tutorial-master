@@ -11,11 +11,6 @@ requirejs.config({
 
 require(['footwork'],
   function(fw) {
-    fw.components.registerLocation('todoform', {
-      viewModel: '/scripts/viewModels/TodoForm.js',
-      template: '/scripts/templates/TodoForm.html'
-    });
-
     /**
      * Tell footwork it can find the 'LoginForm' and 'TodoList' viewModels
      * inside of /scripts/viewModels.
@@ -24,6 +19,11 @@ require(['footwork'],
       'LoginForm', // will load from /scripts/viewModels/LoginForm.js
       'TodoList' // will load from /scripts/viewModels/TodoList.js
     ], '/scripts/viewModels/');
+
+    fw.components.registerLocation('todoform', {
+      viewModel: '/scripts/viewModels/TodoForm.js',
+      template: '/scripts/templates/TodoForm.html'
+    });
 
     /**
      * Register the location of the 'MainRouter'
