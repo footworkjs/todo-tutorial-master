@@ -14,12 +14,16 @@
   <body>
     <!-- new 'MainRouter' declaration -->
     <router module="MainRouter">
-      <header>
-        <div class="title">Things To Do...</div>
+      <viewModel module="Header">
+        <header>
+          <div class="title">Things To Do...</div>
 
-        <!-- new $route bound link -->
-        <a href="/" data-bind="$route" class="logout button">Logout</a>
-      </header>
+          <div data-bind="if: loggedInUser">
+            <!-- new $route bound link -->
+            <a href="/" data-bind="$route" class="logout button">Logout</a>
+          </div>
+        </header>
+      </viewModel>
       <main>
         <!-- HTML replaced with <outlet> -->
         <outlet name="mainView"></outlet>

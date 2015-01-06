@@ -11,10 +11,16 @@ define(['footwork'],
         // Create reference to the router we will use in the callback
         var router = this;
 
+        // broadcast the username of the current user (default is null for 'logged out')
+        this.loggedInUser = fw.observable(null).broadcastAs('loggedInUser');
+
         // Create the event handler which receives the 'userLogin' event
-        this.$namespace.event.handler('userLogin', function() {
+        this.$namespace.event.handler('userLogin', function(userName) {
           // Tell the router to route to '/todo'
-          router.setState('/todo');
+          router.loggedInUser(userName);
+          if(userName) {
+            router.setState('/todo');
+          }
         });
       },
 
@@ -23,6 +29,9 @@ define(['footwork'],
           route: '/',
           title: 'Todo Application Tutorial',
           controller: function() {
+            // the user is logged out if at the default route, lets nullify the username
+            this.$namespace.trigger('userLogin', null);
+
             // show our login page here
             this.$outlet('mainView', 'login-page');
           }

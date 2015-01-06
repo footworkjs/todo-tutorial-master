@@ -17,7 +17,8 @@ require(['footwork'],
      */
     fw.viewModels.registerLocation([
       'LoginForm', // will load from /scripts/viewModels/LoginForm.js
-      'TodoList' // will load from /scripts/viewModels/TodoList.js
+      'TodoList', // will load from /scripts/viewModels/TodoList.js
+      'Header' // will load from /scripts/viewModels/Header.js
     ], '/scripts/viewModels/');
 
     /**
