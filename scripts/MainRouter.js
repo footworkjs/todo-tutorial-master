@@ -11,13 +11,18 @@ define(['footwork'],
         // Create reference to the router we will use in the callback
         var router = this;
 
-        // broadcast the username of the current user (default is null for 'logged out')
+        /**
+         * broadcast the username of the current user as 'loggedInUser'
+         * (the default value is null indicating 'logged out')
+         */
         this.loggedInUser = fw.observable(null).broadcastAs('loggedInUser');
 
-        // Create the event handler which receives the 'userLogin' event
+        // Create the event handler which receives the 'userLogin' event (and corresponding userName)
         this.$namespace.event.handler('userLogin', function(userName) {
-          // Tell the router to route to '/todo'
+          // set the loggedInUser value to the new userName
           router.loggedInUser(userName);
+
+          // Tell the router to route to '/todo' if we have a userName
           if(userName) {
             router.setState('/todo');
           }
