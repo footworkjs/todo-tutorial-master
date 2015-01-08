@@ -7,6 +7,7 @@
 @incompleteStatusColor: #e2e2e2;
 @rowHeight: 30px;
 @controlWidth: 40px;
+@borderColor: #ddd;
 
 body {
   background: @bodyBackgroundColor;
@@ -24,19 +25,26 @@ header, main {
   line-height: 30px;
   .border-radius(3px);
   .clearblock;
-
-  & > .title {
-    float: left;
-  }
-
-  .logout {
-    float: right;
-    text-decoration: none;
-  }
 }
 
 header {
-  font-weight: bold;
+  text-align: right;
+
+  & > .title {
+    float: left;
+    font-weight: bold;
+  }
+
+  .logout {
+    text-decoration: none;
+  }
+
+  .username {
+    padding: 5px 10px 5px 5px;
+    margin-right: 7px;
+    border-right: 1px solid @borderColor;
+    .border-radius(3px);
+  }
 }
 
 main {
@@ -73,7 +81,7 @@ main {
       .box-sizing(border-box);
 
       &[type="text"], &[type="password"] {
-        border: 1px solid #ddd;
+        border: 1px solid @borderColor;
         .border-radius(3px);
       }
     }
@@ -82,7 +90,7 @@ main {
       float: left;
       margin: 25px;
       padding: 0 5px 15px 0;
-      border: 1px solid #ddd;
+      border: 1px solid @borderColor;
       .border-radius(3px);
       .box-shadow(0 1px 3px -1px black);
 
@@ -126,14 +134,14 @@ main {
 
   .todo-list {
     padding: 10px 10px 0 0px;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid @borderColor;
 
     @todoHeight: 40px;
     .todo {
       font-size: 25px;
       line-height: @todoHeight;
       background: rgb(233, 248, 255);
-      border: 1px solid #ddd;
+      border: 1px solid @borderColor;
       .border-radius(3px);
       .clearblock;
 
