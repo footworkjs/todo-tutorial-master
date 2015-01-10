@@ -18,8 +18,13 @@
         <header>
           <div class="title">Things To Do...</div>
 
-          <!-- new $route bound link -->
-          <a href="/" data-bind="$route" class="logout button">Logout</a>
+          <div data-bind="if: loggedInUser">
+            <!-- display the user name -->
+            <span class="username" data-bind="text: loggedInUser"></span>
+
+            <!-- new $route bound link -->
+            <a href="/" data-bind="$route" class="logout button">Logout</a>
+          </div>
         </header>
       </viewModel>
       <main>
