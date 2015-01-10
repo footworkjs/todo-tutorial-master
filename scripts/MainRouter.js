@@ -18,10 +18,10 @@ define(['footwork'],
         this.loggedInUser = fw.observable(null).broadcastAs('loggedInUser');
 
         // Create the event handler which receives the 'userLogin' event (and corresponding userName)
-        this.$namespace.event.handler('userLogin', function(userName) {
-          // Tell the router to route to '/todo' if we have a userName
-          if(userName) {
-            router.setState('/todo/' + userName);
+        this.$namespace.event.handler('userLogin', function(username) {
+          // Tell the router to route to '/todo/username' if we have a username
+          if(username) {
+            router.setState('/todo/' + username);
           }
         });
       },
@@ -39,7 +39,7 @@ define(['footwork'],
           }
         },
         {
-          route: '/todo/:username',
+          route: '/todo/:username', // defines a required parameter 'username'
           title: 'Todo List',
           controller: function(params) {
             // set the loggedInUser value to the username
