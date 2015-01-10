@@ -19,12 +19,9 @@ define(['footwork'],
 
         // Create the event handler which receives the 'userLogin' event (and corresponding userName)
         this.$namespace.event.handler('userLogin', function(userName) {
-          // set the loggedInUser value to the new userName
-          router.loggedInUser(userName);
-
           // Tell the router to route to '/todo' if we have a userName
           if(userName) {
-            router.setState('/todo');
+            router.setState('/todo/' + userName);
           }
         });
       },
@@ -42,9 +39,12 @@ define(['footwork'],
           }
         },
         {
-          route: '/todo',
+          route: '/todo/:username',
           title: 'Todo List',
-          controller: function() {
+          controller: function(params) {
+            // set the loggedInUser value to the username
+            this.loggedInUser(params.username);
+
             // show our todo list page here
             this.$outlet('mainView', 'todo-page');
           }
