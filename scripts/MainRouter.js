@@ -32,7 +32,7 @@ define(['footwork'],
           title: 'Todo Application Tutorial',
           controller: function() {
             // the user is logged out if at the default route, lets nullify the username
-            this.$namespace.trigger('userLogin', null);
+            this.loggedInUser(null);
 
             // show our login page here
             this.$outlet('mainView', 'login-page');
