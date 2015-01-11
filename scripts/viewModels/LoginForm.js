@@ -10,7 +10,6 @@ define(['footwork'],
         this.mainRouterNamespace = fw.namespace('MainRouter');
 
         this.username = fw.observable();
-        this.password = fw.observable();
         this.loginUser = function() {
           // Tell the MainRouter that a user has logged in
           this.mainRouterNamespace.trigger('userLogin');
