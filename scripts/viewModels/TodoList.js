@@ -4,6 +4,8 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
       namespace: 'TodoList',
       initialize: function() {
         var self = this; // create a reference to this viewModel we can use inside of the callback
+
+        // stores the list of TodoItem entries
         this.todos = fw.observableArray();
 
         // listen for any 'newItem' messages broadcast on our namespace.
