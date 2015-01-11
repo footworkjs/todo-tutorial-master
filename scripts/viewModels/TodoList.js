@@ -4,7 +4,7 @@ var TodoList = fw.viewModel({
   initialize: function() {
     var self = this; // create a reference to this viewModel we can use inside of the callback
 
-    // store the list of TodoItem entries
+    // stores the list of TodoItem entries
     this.todos = fw.observableArray();
 
     // listen for any 'newItem' messages broadcast on our namespace.
