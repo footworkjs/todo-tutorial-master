@@ -5,6 +5,6 @@ define(['footwork'],
       initialize: function(thingToDo) {
         this.thingToDo = fw.observable(thingToDo);
       }
-    });    
+    });
   }
 );
