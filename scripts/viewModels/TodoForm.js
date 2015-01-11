@@ -10,7 +10,7 @@ define(['footwork'],
         // create the namespace 'channel' we will use to talk to the TodoList
         this.todoListNamespace = fw.namespace('TodoList');
 
-        // holds flag which indicates current status of mark all
+        // holds flag which indicates whether we have 'marked all' or 'mark none' of the items
         this.allMarked = fw.observable(false);
 
         // event triggered when user clicks the down-chevron icon
