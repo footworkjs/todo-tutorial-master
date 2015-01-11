@@ -119,9 +119,14 @@ main {
         text-align: center;
         cursor: pointer;
         color: @incompleteStatusColor;
+        .no-select;
 
         &:hover {
           color: darken(@incompleteStatusColor, 10%);
+        }
+
+        &.allAreMarked {
+          color: darken(@incompleteStatusColor, 30%);
         }
       }
 
