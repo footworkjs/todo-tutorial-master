@@ -27,7 +27,7 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
 
         // listen for any 'deleteItem' commands broadcast on our namespace.
         this.$namespace.command.handler('deleteItem', function(item) {
-          // when a new deleteItem is we delete it from the list of todos
+          // when a new deleteItem command is received delete it from the list of todos
           self.todos.remove(item);
         });
 
