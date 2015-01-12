@@ -2,12 +2,12 @@
 <viewModel module="TodoList">
   <div class="todo-list">
     <div class="todos" data-bind="foreach: todos">
-      <!-- css: binding adds isDone class when TodoItem is 'completed' -->
+      <!-- css: binding adds isDone class when TodoItem is 'completed' (true) -->
       <div class="todo" data-bind="css: { isDone: isDone }">
         <!-- click: binding toggles status of the TodoItem -->
         <div class="status icon-check" data-bind="click: toggleDone"></div>
         <div class="text" data-bind="text: thingToDo"></div>
-        <div class="clear icon-x"></div>
+        <div class="clear icon-x" data-bind="click: deleteItem"></div>
       </div>
     </div>
   </div>
