@@ -9,7 +9,7 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
         this.todos = fw.observableArray();
 
         // broadcasts the number of remaining todos
-        this.remainingTodos = fw.observable(0).broadcastAs('remainingTodos');
+        this.numRemainingTodos = fw.observable(0).broadcastAs('numRemainingTodos');
 
         // listen for any 'newItem' messages broadcast on our namespace.
         this.$namespace.subscribe('newItem', function(thingToDo) {
@@ -41,7 +41,7 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
             }
           });
 
-          self.remainingTodos(numRemaining);
+          self.numRemainingTodos(numRemaining);
         }
 
         // listen for any messages/commands which require us to compute the remaining todos.
