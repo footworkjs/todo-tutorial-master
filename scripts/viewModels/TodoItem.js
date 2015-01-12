@@ -15,6 +15,7 @@ define(['footwork'],
         // toggle the state of this TodoItem
         this.toggleDone = function() {
           this.isDone(!this.isDone());
+          this.todoListNamespace.publish('itemChanged');
         };
 
         // method used to send the deleteItem command when a user clicks the 'X'
