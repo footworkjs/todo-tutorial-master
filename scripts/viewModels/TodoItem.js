@@ -12,10 +12,14 @@ define(['footwork'],
         // store the state of the TodoItem (true = done, false = not done)
         this.isDone = fw.observable(false);
 
+        // publish an 'itemChanged' event to the TodoList each time the isDone state changes
+        this.isDone.subscribe(function() {
+          this.todoListNamespace.publish('itemChanged');
+        }, this);
+
         // toggle the state of this TodoItem
         this.toggleDone = function() {
           this.isDone(!this.isDone());
-          this.todoListNamespace.publish('itemChanged');
         };
 
         // method used to send the deleteItem command when a user clicks the 'X'

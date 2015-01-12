@@ -41,6 +41,7 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
             }
           });
 
+          // write the number of remaining todos to the numRemainingTodos broadcastable
           self.numRemainingTodos(numRemaining);
         }
 
