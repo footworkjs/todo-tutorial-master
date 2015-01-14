@@ -1,7 +1,7 @@
 <todoform></todoform>
 <viewModel module="TodoList">
   <div class="todo-list">
-    <div class="todos" data-bind="foreach: todos">
+    <div class="todos" data-bind="foreach: filteredTodos">
       <!-- css: binding adds isDone class when TodoItem is 'completed' (true) -->
       <div class="todo" data-bind="css: { isDone: isDone }">
         <!-- click: binding toggles status of the TodoItem -->
@@ -19,5 +19,12 @@
       <!-- text: binding which displays the number of remaining todo items -->
       <span data-bind="text: numRemainingTodos"></span> items left
     </div>
+
+    <a data-bind="$route: { url: allRoute }">all</a>
+    <a data-bind="$route: { url: activeRoute }">active</a>
+    <a data-bind="$route: { url: completedRoute }">completed</a>
+
+    <!-- click: binding which will clear/delete the completed todo entries -->
+    <button class="button" data-bind="click: clearCompleted">Clear Completed</button>
   </footer>
 </viewModel>
