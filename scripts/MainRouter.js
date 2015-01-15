@@ -24,7 +24,7 @@ define(['footwork'],
         this.$namespace.event.handler('userLogin', function(username) {
           // Tell the router to route to '/todo/username' if we have a username
           if(username) {
-            router.setState('/todo/' + username);
+            router.setState('/todo/' + username + '/all');
           }
         });
       },

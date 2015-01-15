@@ -3,9 +3,6 @@ define(['footwork'],
     return fw.viewModel({
       namespace: 'Footer',
       initialize: function() {
-        // create reference to this footer
-        var footer = this;
-
         // create the namespace 'channel' we will use to talk to the TodoList
         this.todoListNamespace = fw.namespace('TodoList');
 
@@ -23,14 +20,14 @@ define(['footwork'],
 
         // the callbacks which return the needed filter routes
         this.allRoute = function() {
-          return '/todo/' + footer.loggedInUser() + '/all';
-        };
+          return '/todo/' + this.loggedInUser() + '/all';
+        }.bind(this);
         this.activeRoute = function() {
-          return '/todo/' + footer.loggedInUser() + '/active';
-        };
+          return '/todo/' + this.loggedInUser() + '/active';
+        }.bind(this);
         this.completedRoute = function() {
-          return '/todo/' + footer.loggedInUser() + '/completed';
-        };
+          return '/todo/' + this.loggedInUser() + '/completed';
+        }.bind(this);
       }
     });
   }
