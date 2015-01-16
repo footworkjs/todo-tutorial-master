@@ -1,6 +1,7 @@
 <todoform></todoform>
 <viewModel module="TodoList">
   <div class="todo-list">
+    <!-- foreach: binding now using the filteredTodos list -->
     <div class="todos" data-bind="foreach: filteredTodos">
       <!-- css: binding adds isDone class when TodoItem is 'completed' (true) -->
       <div class="todo" data-bind="css: { isDone: isDone }">
