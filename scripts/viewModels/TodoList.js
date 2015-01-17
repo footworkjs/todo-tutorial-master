@@ -101,10 +101,9 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
         this.$namespace.command.handler('deleteItem', computeRemainingTodos);
 
         // load in the current list of todos from localStorage
-        var key;
         var loggedInUser = fw.observable().receiveFrom('MainRouter', 'loggedInUser');
         for(var keyNum = 0; keyNum < localStorage.length; keyNum++) {
-          key = localStorage.key(keyNum);
+          var key = localStorage.key(keyNum);
           // we only want to add todos that belong to this user so we check here
           if(loggedInUser() === key.substr(0, loggedInUser().length)) {
             /**

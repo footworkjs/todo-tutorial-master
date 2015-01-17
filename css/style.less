@@ -53,6 +53,7 @@ main {
   .clearblock;
 
   form {
+    position: relative;
     line-height: @rowHeight;
     .clearblock;
 
@@ -112,13 +113,16 @@ main {
 
     &.todo {
       .icon-chevron-down {
-        float: left;
+        position: absolute;
+        left: 0;
+        top: 0;
         font-size: 25px;
         line-height: @rowHeight;
         width: @controlWidth;
         text-align: center;
         cursor: pointer;
         color: @incompleteStatusColor;
+        border-right: 1px solid @borderColor;
         .no-select;
 
         &:hover {
@@ -132,10 +136,8 @@ main {
 
       input[type="text"] {
         display: block;
-        float: left;
-        width: 300px;
-        max-width: 100%;
-        margin-right: 0;
+        width: 100%;
+        padding-left: 45px;
       }
 
       input[type="submit"] {

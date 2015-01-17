@@ -22,13 +22,14 @@ define(['footwork'],
         this.isDone.subscribe(function() {
           // when it is changed publish an 'itemChanged' event to the TodoList
           this.todoListNamespace.publish('itemChanged');
+
+          // the value changed so we save the todo again
+          this.saveItem();
         }, this);
 
         // toggle the state of this TodoItem
         this.toggleDone = function() {
           this.isDone(!this.isDone());
-          // the value changed so we save the todo again
-          this.saveItem();
         };
 
         // method used to send the deleteItem command when a user clicks the 'X'
