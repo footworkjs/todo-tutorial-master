@@ -29,7 +29,7 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
 
           // remove the completed todo entries
           completedTodos.forEach(function(todo) {
-            self.todos.remove(todo);
+            todo.deleteItem();
           });
         });
 
