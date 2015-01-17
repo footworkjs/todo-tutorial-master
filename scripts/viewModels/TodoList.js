@@ -47,7 +47,7 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
         // listen for any 'newItem' messages broadcast on our namespace.
         this.$namespace.subscribe('newItem', function(thingToDo) {
           // new thingToDo was received, lets create a new TodoItem based on it
-          self.todos.push( new TodoItem(thingToDo) );
+          self.todos.push( new TodoItem({ thingToDo: thingToDo }) );
         });
 
         // listen for any 'clearCompleted' commands broadcast on our namespace.
@@ -99,6 +99,21 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
         this.$namespace.subscribe('newItem', computeRemainingTodos);
         this.$namespace.command.handler('setAllAs', computeRemainingTodos);
         this.$namespace.command.handler('deleteItem', computeRemainingTodos);
+
+        // load in the current list of todos from localStorage
+        var key;
+        var loggedInUser = fw.observable().receiveFrom('MainRouter', 'loggedInUser');
+        for(var keyNum = 0; keyNum < localStorage.length; keyNum++) {
+          key = localStorage.key(keyNum);
+          // we only want to add todos that belong to this user so we check here
+          if(loggedInUser() === key.substr(0, loggedInUser().length)) {
+            /**
+             * The key starts with our loggedInUser so we add a new TodoItem using its value
+             * we read and parse from localStorage
+             */
+            this.todos.push( new TodoItem( JSON.parse(localStorage.getItem(key)) ) );
+          }
+        }
       }
     });
   }
