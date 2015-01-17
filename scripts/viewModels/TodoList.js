@@ -114,6 +114,7 @@ define(['footwork', '/scripts/viewModels/TodoItem.js'],
             this.todos.push( new TodoItem( JSON.parse(localStorage.getItem(key)) ) );
           }
         }
+        computeRemainingTodos();
       }
     });
   }
