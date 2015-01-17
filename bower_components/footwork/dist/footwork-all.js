@@ -164,7 +164,7 @@ w=koExports;})();
   return (function() {
     // define our own root object to supply to the modules as an attachment point
 var root = {};
-  
+
 // supply our root for modules that directly check for the window object
 var window = root;
 
@@ -175,6 +175,7 @@ var define = undefined;
 var module = undefined,
     exports = undefined,
     global = undefined;
+
     if (!Function.prototype.bind) {
   Function.prototype.bind = function(oThis) {
     if (typeof this !== 'function') {
@@ -199,6 +200,7 @@ var module = undefined,
     return fBound;
   };
 }
+
     root.ko = ko;
 
     (function() {
@@ -9671,6 +9673,20 @@ function propertyDisposal( property, name ) {
   }
 }
 
+// Generate a random pseudo-GUID
+// http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+var guid = fw.guid = (function() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+               .toString(16)
+               .substring(1);
+  }
+  return function() {
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+           s4() + '-' + s4() + s4() + s4();
+  };
+})();
+
 // broadcast-receive.js
 // ----------------
 
@@ -9851,6 +9867,10 @@ var baseRouteDescription = {
 
 function transformRouteConfigToDesc(routeDesc) {
   return extend({ id: uniqueId('route') }, baseRouteDescription, routeDesc );
+}
+
+function sameRouteDescription(desc1, desc2) {
+  return desc1.id === desc2.id && isEqual(desc1.indexedParams, desc2.indexedParams) && isEqual(desc1.namedParams, desc2.namedParams);
 }
 
 // Convert a route string to a regular expression which is then used to match a uri against it and determine
@@ -10335,7 +10355,6 @@ Router.prototype.setState = function(url) {
 };
 
 Router.prototype.startup = function( $context, $parentRouter ) {
-  var $myRouter = this;
   $parentRouter = $parentRouter || $nullRouter;
 
   if( !isNullRouter($parentRouter) ) {
@@ -10437,7 +10456,7 @@ Router.prototype.getRouteForURL = function(url) {
 
     if( isString(routeString) ) {
       routeParams = url.match(routeStringToRegExp(routeString));
-      if( !isNull(routeParams) && routeDescription.filter.call($myRouter, routeParams, $myRouter.urlParts()) ) {
+      if( !isNull(routeParams) && routeDescription.filter.call($myRouter, routeParams, $myRouter.urlParts.peek()) ) {
         matchedRoutes.push({
           routeString: routeString,
           specificity: routeString.replace(namedParamRegex, "*").length,
@@ -10484,30 +10503,30 @@ Router.prototype.getRouteForURL = function(url) {
   return route || unknownRoute;
 };
 
-function sameRouteDescription(desc1, desc2) {
-  return desc1.id === desc2.id && isEqual(desc1.indexedParams, desc2.indexedParams) && isEqual(desc1.namedParams, desc2.namedParams);
+function DefaultAction() {
+  delete this.__currentRouteDescription;
+  this.$outlet.reset();
+}
+
+function RoutedAction(routeDescription) {
+  if( !isUndefined(routeDescription.title) ) {
+    document.title = isFunction(routeDescription.title) ? routeDescription.title.call(this, routeDescription.namedParams, this.urlParts()) : routeDescription.title;
+  }
+
+  if( isUndefined(this.__currentRouteDescription) || !sameRouteDescription(this.__currentRouteDescription, routeDescription) ) {
+    routeDescription.controller.call( this, routeDescription.namedParams );
+    this.__currentRouteDescription = routeDescription;
+  }
 }
 
 Router.prototype.getActionForRoute = function(routeDescription) {
-  var Action = function() {
-    delete this.__currentRouteDescription;
-    this.$outlet.reset();
-  }.bind(this);
+  var Action;
 
   if( isRoute(routeDescription) ) {
-    Action = function() {
-      if( !isUndefined(routeDescription.title) ) {
-        document.title = isFunction(routeDescription.title) ? routeDescription.title.call(this, routeDescription.namedParams, this.urlParts()) : routeDescription.title;
-      }
-
-      if( isUndefined(this.__currentRouteDescription) || !sameRouteDescription(this.__currentRouteDescription, routeDescription) ) {
-        routeDescription.controller.call( this, routeDescription.namedParams );
-        this.__currentRouteDescription = routeDescription;
-      }
-    }.bind(this);
+    Action = RoutedAction.bind(this, routeDescription);
   }
 
-  return Action;
+  return Action || DefaultAction.bind(this);
 };
 
 Router.prototype.getRouteDescriptions = function() {

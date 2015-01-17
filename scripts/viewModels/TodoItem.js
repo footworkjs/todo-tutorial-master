@@ -16,7 +16,7 @@ define(['footwork'],
         this.thingToDo = fw.observable(thingToDo.thingToDo);
 
         // store the state of the TodoItem (true = done, false = not done)
-        this.isDone = fw.observable(thingToDo.isDone || false);
+        this.isDone = fw.observable(thingToDo.isDone);
 
         // Listen for any changes on the TodoItem isDone state
         this.isDone.subscribe(function() {
@@ -37,7 +37,7 @@ define(['footwork'],
           // tell the TodoList to delete this item
           this.todoListNamespace.command('deleteItem', this);
 
-          // delete this item from localStorage
+          // delete this item from localStorage also
           localStorage.removeItem(guid);
         };
 
@@ -51,7 +51,7 @@ define(['footwork'],
         };
 
         if(!thingToDo.guid) {
-          // if this is a new object lets save it to localStorage for the first time
+          // the data object as no guid, it is new so lets save it to localStorage
           this.saveItem();
         }
       }
