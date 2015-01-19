@@ -3,9 +3,10 @@
  * footwork are located.
  */
 requirejs.config({
+  baseUrl: '/',
   paths: {
-    "text": "/bower_components/requirejs-text/text",
-    "footwork": "/bower_components/footwork/dist/footwork-all"
+    "text": "bower_components/requirejs-text/text",
+    "footwork": "bower_components/footwork/dist/footwork-all"
   }
 });
 
@@ -20,28 +21,28 @@ require(['footwork'],
       'TodoList', // will load from /scripts/viewModels/TodoList.js
       'Header', // will load from /scripts/viewModels/Header.js
       'Footer' // will load from /scripts/viewModels/Footer.js
-    ], '/scripts/viewModels/');
+    ], 'scripts/viewModels/');
 
     /**
      * Here we provide the entire filename to footwork because the lowercase
      * 'todoform' does not match the file names on disk.
      */
     fw.components.registerLocation('todoform', {
-      viewModel: '/scripts/viewModels/TodoForm.js',
-      template: '/scripts/templates/TodoForm.html'
+      viewModel: 'scripts/viewModels/TodoForm',
+      template: 'scripts/templates/TodoForm'
     });
 
     /**
      * Register the location of the 'MainRouter'
      * Loads from /scripts/MainRouter.js
      */
-    fw.routers.registerLocation('MainRouter', '/scripts/');
+    fw.routers.registerLocation('MainRouter', 'scripts/');
 
     // Tell footwork it can find the login-page and todo-page inside of /scripts/views/
     fw.outlets.registerViewLocation([
       'login-page', // will load from /scripts/views/login-page.html
       'todo-page' // will load from /scripts/views/todo-page.html
-    ], '/scripts/views/');
+    ], 'scripts/views/');
 
     // tell footwork to startup and begin binding
     fw.start();
