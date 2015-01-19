@@ -6,7 +6,7 @@
   "author": "Jonathan Newman <jonathan@staticty.pe>",
   "dependencies": {},
   "devDependencies": {
-    "footwork": "https://github.com/reflectiveSingleton/footwork.git#a1efda86b5c9306b66bfc5e49437ee1d949829d6",
+    "footwork": "https://github.com/reflectiveSingleton/footwork.git#f76c45dab7572eceb2e07e769891470e4695e825",
     "less.js": "*",
     "requirejs": "*",
     "requirejs-text": "*"
