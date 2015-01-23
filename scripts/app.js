@@ -3,6 +3,7 @@
  * footwork are located.
  */
 requirejs.config({
+  baseUrl: '/',
   paths: {
     "text": "/bower_components/requirejs-text/text",
     "footwork": "/bower_components/footwork/dist/footwork-all"
