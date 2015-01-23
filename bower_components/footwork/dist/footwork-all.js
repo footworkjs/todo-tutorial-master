@@ -1,7 +1,7 @@
 /**
  * footwork.js - A solid footing for web applications.
  * Author: Jonathan Newman (http://staticty.pe)
- * Version: v0.8.0pre-all
+ * Version: v0.8.0-all
  * Url: http://footworkjs.com
  * License(s): MIT
  */
@@ -9301,15 +9301,15 @@ if (typeof JSON !== 'object') {
 var fw = ko;
 
 // Record the footwork version as of this build.
-fw.footworkVersion = '0.8.0pre';
+fw.footworkVersion = '0.8.0';
 
 // Expose any embedded dependencies
 fw.embed = embedded;
 
 // misc regex patterns
-var hasTrailingSlash = /\/$/i;
-var hasStartingSlash = /^\//i;
-var hasStartingHash = /^#/i;
+var trailingSlashRegex = /\/$/;
+var startingSlashRegex = /^\//;
+var startingHashRegex = /^#/;
 
 // misc utility functions
 var noop = function() { };
@@ -9317,15 +9317,15 @@ var noop = function() { };
 var isObservable = fw.isObservable;
 
 function isPath(pathOrFile) {
-  return hasTrailingSlash.test(pathOrFile);
+  return trailingSlashRegex.test(pathOrFile);
 };
 
 function hasPathStart(path) {
-  return hasStartingSlash.test(path);
+  return startingSlashRegex.test(path);
 };
 
 function hasHashStart(string) {
-  return hasStartingHash.test(string);
+  return startingHashRegex.test(string);
 }
 
 function hasClass(element, className) {
@@ -10176,7 +10176,7 @@ fw.bindingHandlers.$route = {
     function setUpElement() {
       var myCurrentSegment = routeURLWithoutParentPath();
       if( element.tagName.toLowerCase() === 'a' ) {
-        element.href = (fwRouters.html5History() ? '' : '/') + routeURLWithParentPath();
+        element.href = (fwRouters.html5History() ? '' : '/') + $myRouter.config.baseRoute + routeURLWithParentPath();
       }
 
       if( isObject(stateTracker) ) {
@@ -10187,6 +10187,8 @@ fw.bindingHandlers.$route = {
       if(elementIsSetup === false) {
         elementIsSetup = true;
         checkForMatchingSegment(myCurrentSegment, $myRouter.currentRoute());
+
+        $myRouter.parentRouter.subscribe(setUpElement);
         fw.utils.registerEventHandler(element, routeHandlerDescription.on, function(event) {
           var currentRouteURL = routeURLWithoutParentPath();
           var handlerResult = routeHandlerDescription.handler.call(viewModel, event, currentRouteURL);
@@ -10311,8 +10313,7 @@ var Router = function( routerConfig, $viewModel, $context ) {
   if( routerConfig.activate === true ) {
     subscriptions.push(this.context.subscribe(function activateRouterAfterNewContext( $context ) {
       if( isObject($context) ) {
-        this
-          .activate( $context );
+        this.activate($context);
       }
     }, this));
   }
@@ -10333,7 +10334,7 @@ Router.prototype.addRoutes = function(routeConfig) {
 };
 
 Router.prototype.activate = function($context, $parentRouter) {
-  this.startup( $context, $parentRouter );
+  this.startup( $context, $parentRouter || nearestParentRouter($context) );
   this.userInitialize();
   if( this.currentState() === '' ) {
     this.setState();
@@ -10346,7 +10347,7 @@ Router.prototype.setState = function(url) {
     if(isString(url)) {
       var historyAPIWorked = true;
       try {
-        historyAPIWorked = History.pushState(null, '', this.parentRouter().path() + url);
+        historyAPIWorked = History.pushState(null, '', this.config.baseRoute + this.parentRouter().path() + url);
       } catch(historyException) {
         console.error(historyException);
         historyAPIWorked = false;
@@ -10378,11 +10379,14 @@ Router.prototype.startup = function( $context, $parentRouter ) {
   if( !this.historyIsEnabled() ) {
     if( historyIsReady() && !this.disableHistory() ) {
       History.Adapter.bind( windowObject, 'popstate', this.stateChangeHandler = function(event) {
-        if(!fwRouters.html5History() && windowObject.location.pathname === '/' && windowObject.location.hash.length > 1) {
-          this.currentState( this.normalizeURL('/' + windowObject.location.hash.substring(1)) );
+        var url = '';
+        if(!fwRouters.html5History() && windowObject.location.hash.length > 1) {
+          url = windowObject.location.hash;
         } else {
-          this.currentState( this.normalizeURL(windowObject.location.pathname + windowObject.location.hash) );
+          url = windowObject.location.pathname + windowObject.location.hash;
         }
+
+        this.currentState( this.normalizeURL(url) );
       }.bind(this));
       this.historyIsEnabled(true);
     } else {
@@ -10412,23 +10416,31 @@ Router.prototype.dispose = function() {
   }), propertyDisposal);
 };
 
-Router.prototype.normalizeURL = function(url) {
-  var urlParts = parseUri(url);
-  this.urlParts(urlParts);
-
-  if(!fwRouters.html5History() && urlParts.path === '/') {
-    url = '/' + urlParts.anchor;
-  } else {
-    url = urlParts.path;
-  }
-
-  if( !isNull(this.config.baseRoute) && url.indexOf(this.config.baseRoute) === 0 ) {
-    url = url.substr(this.config.baseRoute.length);
+function trimBaseRoute($router, url) {
+  if( !isNull($router.config.baseRoute) && url.indexOf($router.config.baseRoute) === 0 ) {
+    url = url.substr($router.config.baseRoute.length);
     if(url.length > 1) {
       url = url.replace(hashMatchRegex, '/');
     }
   }
   return url;
+}
+
+Router.prototype.normalizeURL = function(url) {
+  var urlParts = parseUri(url);
+  this.urlParts(urlParts);
+
+  if(!fwRouters.html5History()) {
+    if(url.indexOf('#') !== -1) {
+      url = '/' + urlParts.anchor.replace(startingSlashRegex, '');
+    } else if(this.currentState() !== url) {
+      url = '/';
+    }
+  } else {
+    url = urlParts.path;
+  }
+
+  return trimBaseRoute(this, url);
 };
 
 Router.prototype.getUnknownRoute = function() {
@@ -10458,15 +10470,14 @@ Router.prototype.getRouteForURL = function(url) {
   }
 
   // find all routes with a matching routeString
-  var matchedRoutes = [];
-  find(this.getRouteDescriptions(), function(routeDescription) {
+  var matchedRoutes = reduce(this.getRouteDescriptions(), function(matches, routeDescription) {
     var routeString = routeDescription.route;
     var routeParams = [];
 
     if( isString(routeString) ) {
       routeParams = url.match(routeStringToRegExp(routeString));
       if( !isNull(routeParams) && routeDescription.filter.call($myRouter, routeParams, $myRouter.urlParts.peek()) ) {
-        matchedRoutes.push({
+        matches.push({
           routeString: routeString,
           specificity: routeString.replace(namedParamRegex, "*").length,
           routeDescription: routeDescription,
@@ -10474,8 +10485,8 @@ Router.prototype.getRouteForURL = function(url) {
         });
       }
     }
-    return route;
-  });
+    return matches;
+  }, []);
 
   // If there are matchedRoutes, find the one with the highest 'specificity' (longest normalized matching routeString)
   // and convert it into the actual route
