@@ -46,12 +46,12 @@
     "expect": "0.1.2",
     "mocha": "*"
   },
-  "_release": "481bd8fc52",
+  "_release": "e6d4bac803",
   "_resolution": {
     "type": "commit",
-    "commit": "481bd8fc52a7992f00948e74e5df9e1ee9b154ed"
+    "commit": "e6d4bac803309788cd9cfff6c825ae569b30a6dd"
   },
   "_source": "git://github.com/reflectiveSingleton/footwork.git",
-  "_target": "481bd8fc52a7992f00948e74e5df9e1ee9b154ed",
+  "_target": "e6d4bac803309788cd9cfff6c825ae569b30a6dd",
   "_originalSource": "footwork"
 }
