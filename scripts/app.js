@@ -6,7 +6,7 @@ requirejs.config({
   baseUrl: '/',
   paths: {
     "text": "bower_components/requirejs-text/text",
-    "footwork": "bower_components/footwork/dist/footwork-all"
+    "footwork": "bower_components/footwork/dist/footwork-all-history"
   }
 });
 
