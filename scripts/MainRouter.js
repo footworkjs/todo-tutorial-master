@@ -41,9 +41,9 @@ define(['footwork'],
         {
           route: '/todo/:username', // defines a required parameter 'username'
           title: 'Todo List',
-          controller: function(params) {
+          controller: function(username) {
             // set the loggedInUser value to the username
-            this.loggedInUser(params.username);
+            this.loggedInUser(username);
 
             // show our todo list page here
             this.$outlet('mainView', 'todo-page');
