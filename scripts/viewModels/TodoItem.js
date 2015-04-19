@@ -7,7 +7,7 @@ define(['footwork'],
         var loggedInUser = fw.observable().receiveFrom('MainRouter', 'loggedInUser');
 
         // use existing GUID or generate a random one
-        var guid = thingToDo.guid || (loggedInUser() + '-' + fw.guid());
+        var guid = thingToDo.guid || (loggedInUser() + '-' + fw.utils.guid());
 
         // create the namespace 'channel' we will use to talk to the TodoList
         this.todoListNamespace = fw.namespace('TodoList');
