@@ -44,12 +44,12 @@ define(['footwork'],
         {
           route: '/todo/:username(/:state)', // required parameter 'username', optional parameter 'state'
           title: 'Todo List',
-          controller: function(params) {
+          controller: function(params, state) {
             // set the loggedInUser value to the username
-            this.loggedInUser(params.username);
+            this.loggedInUser(username);
 
             // set the listFilter value to the supplied state (will be broadcast to the TodoList)
-            this.listFilter(params.state || 'all');
+            this.listFilter(state || 'all');
 
             // show our todo list page here
             this.$outlet('mainView', 'todo-page');
