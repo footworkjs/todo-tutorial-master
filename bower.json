@@ -6,7 +6,7 @@
   "author": "Jonathan Newman <jonathan@staticty.pe>",
   "dependencies": {},
   "devDependencies": {
-    "footwork": "e6d4bac803309788cd9cfff6c825ae569b30a6dd",
+    "footwork": "fef43fe35acf1137149eddfd619109574af9e2b9",
     "less.js": "*",
     "requirejs": "*",
     "requirejs-text": "*"
