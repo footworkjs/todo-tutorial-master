@@ -44,7 +44,7 @@ define(['footwork'],
         {
           route: '/todo/:username(/:state)', // required parameter 'username', optional parameter 'state'
           title: 'Todo List',
-          controller: function(params, state) {
+          controller: function(username, state) {
             // set the loggedInUser value to the username
             this.loggedInUser(username);
 
