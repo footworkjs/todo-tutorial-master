@@ -1,0 +1,100 @@
+#!/bin/bash
+
+declare -a branches=("master" "setup" "baseApplication" "creatingTodos" "components" "amd" "routerConfiguration" "routerUsage" "createOutlet" "creatingViews" "changingOutlet" "manipulatingRoute" "routeBinding" "headerViewModel" "usernameDisplay" "logoutRendering" "completingTodo" "markAllTodo" "deletingTodo" "footerViewModel" "renderNumTodos" "clearingCompletedTodos" "filteringTheList" "savingTodos" "loadingTodos")
+cd public
+
+BASEDIR=`pwd`
+
+if [ $# -gt 0 ]; then
+  if [ "$1" == "clean" ]; then
+    # remove the branches
+    for branch in "${branches[@]}"
+    do
+      echo "$branch"
+      rm -rf ${branch}
+    done
+  fi
+
+  if [ "$1" == "commit" ]; then
+    if [ $# -ne 2 ]; then
+      echo "Must include a commit message"
+      exit
+    fi
+
+    for branch in "${branches[@]}"
+    do
+      if [ "${branch}" != "master" ]; then
+        MESSAGE=$2
+        echo "Committing ($branch): \"${MESSAGE}\""
+        cd ${branch}
+        git commit -a -m "${MESSAGE}"
+        cd ..
+      fi
+    done
+  fi
+
+  if [ "$1" == "push" ]; then
+    for branch in "${branches[@]}"
+    do
+      if [ "${branch}" != "master" ]; then
+        echo "Pushing ($branch)"
+        cd ${branch}
+        git push
+        cd ..
+      fi
+    done
+  fi
+
+  if [ "$1" == "prepForHttp" ]; then
+    for branch in "${branches[@]}"
+    do
+      echo "Preparing $branch..."
+      cd ${branch}
+      sed -i.bak "s/'\/'/'\/${branch}'/g" scripts/app.js
+      rm -f scripts/app.js.bak
+      cd ..
+    done
+  fi
+
+  if [ "$1" == "syncAssets" ]; then
+    MDIR="${BASEDIR}/master"
+    for branch in "${branches[@]}"
+    do
+      if [ "${branch}" != "master" ]; then
+        BDIR="${BASEDIR}/${branch}"
+        echo "Syncing master assets into $branch..."
+
+        rm -rf ${BDIR}/bower.json ${BDIR}/bower_components ${BDIR}/css ${BDIR}/images ${BDIR}/.gitignore ${BDIR}/README.md
+        cp -af ${MDIR}/bower.json ${BDIR}
+        cp -af ${MDIR}/bower_components ${BDIR}
+        cp -af ${MDIR}/css ${BDIR}
+        cp -af ${MDIR}/images ${BDIR}
+        cp -af ${MDIR}/.gitignore ${BDIR}
+        cp -af ${MDIR}/README.md ${BDIR}
+
+        cd ${BDIR}; git add -A .; cd ..
+      fi
+    done
+  fi
+
+  exit
+fi
+
+REPO=git+ssh://git@github.com/reflectiveSingleton/todo-tutorial-master.git
+
+# clone/prepare master repository
+rm -rf master
+git clone ${REPO} master
+
+# checkout the branches
+for branch in "${branches[@]}"
+do
+  if [ "${branch}" != "master" ]; then
+    echo "$branch"
+    rm -rf ${branch}
+    cp -a master ${branch}
+    cd ${branch}
+    git checkout ${branch}
+    cd ..
+  fi
+done
