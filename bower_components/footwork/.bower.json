@@ -31,13 +31,14 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "knockoutjs": "3.3.0",
-    "knockoutjs-nowrapper": "https://github.com/reflectiveSingleton/knockout-nowrapper.git#aed2cd28719849f4c2ee01d7080ac80ca83a7d66",
+    "knockoutjs": "3.4.0",
+    "knockoutjs-nowrapper": "https://github.com/reflectiveSingleton/knockout-nowrapper.git#522cfa77b6e0e3bef2d21537f6a1d5fc884be69c",
     "riveter": "https://github.com/reflectiveSingleton/riveter.git#a7916c8e0fd9434876c8defcf34948c724002fbb",
     "lodash": "3.3.1",
     "postal.js": "1.0.1",
     "reqwest": "1.1.5",
-    "jquery": "1.11.2",
+    "jquery": "2.1.4",
+    "jquery-mockjax": "2.0.1",
     "postal.preserve": "https://github.com/reflectiveSingleton/postal.preserve.git#f0a7d2c7b63942e1d98884a8c438a423409118fb",
     "history.js": "https://github.com/reflectiveSingleton/history.js.git#ae04b0e41c48a1e2f272cc10e29c2aeaa50d1a86",
     "console-polyfill": "*",
@@ -46,12 +47,12 @@
     "expect": "0.1.2",
     "mocha": "*"
   },
-  "_release": "fef43fe35a",
+  "_release": "4ad6e391ff",
   "_resolution": {
     "type": "commit",
-    "commit": "fef43fe35acf1137149eddfd619109574af9e2b9"
+    "commit": "4ad6e391ffdf9c42c512c67de76ad6d476d40f47"
   },
-  "_source": "git://github.com/reflectiveSingleton/footwork.git",
-  "_target": "fef43fe35acf1137149eddfd619109574af9e2b9",
+  "_source": "git://github.com/footworkjs/footwork.git",
+  "_target": "4ad6e391ffdf9c42c512c67de76ad6d476d40f47",
   "_originalSource": "footwork"
 }
