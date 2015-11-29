@@ -1,6 +1,6 @@
 define(['footwork'],
   function(fw) {
-    return fw.router({
+    return fw.router.create({
       namespace: 'MainRouter',
 
       /**
