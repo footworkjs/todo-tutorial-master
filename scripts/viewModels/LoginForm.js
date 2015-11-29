@@ -1,6 +1,6 @@
 define(['footwork'],
   function(fw) {
-    return fw.viewModel({
+    return fw.viewModel.create({
       namespace: 'LoginForm',
       initialize: function() {
         this.username = fw.observable();
