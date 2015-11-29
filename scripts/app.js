@@ -16,7 +16,7 @@ require(['footwork'],
      * Tell footwork it can find the 'LoginForm', 'TodoList', 'Header' and
      * 'Footer' viewModels inside of scripts/viewModels/
      */
-    fw.viewModels.registerLocation([
+    fw.viewModel.registerLocation([
       'LoginForm', // will load from scripts/viewModels/LoginForm.js
       'TodoList', // will load from scripts/viewModels/TodoList.js
       'Header', // will load from scripts/viewModels/Header.js
@@ -36,7 +36,7 @@ require(['footwork'],
      * Register the location of the 'MainRouter'
      * Loads from scripts/MainRouter.js
      */
-    fw.routers.registerLocation('MainRouter', 'scripts/');
+    fw.router.registerLocation('MainRouter', 'scripts/');
 
     // Tell footwork it can find the login-page and todo-page inside of scripts/views/
     fw.outlets.registerViewLocation([
