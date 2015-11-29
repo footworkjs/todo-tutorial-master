@@ -1,6 +1,6 @@
 define(['footwork'],
   function(fw) {
-    return fw.viewModel({
+    return fw.viewModel.create({
       namespace: 'TodoItem',
       initialize: function(thingToDo) {
         // store the string text entered by user as thingToDo

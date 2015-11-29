@@ -13,7 +13,7 @@ requirejs.config({
 require(['footwork'],
   function(fw) {
     // Tell footwork where it can find the TodoList viewModel.
-    fw.viewModels.registerLocation('TodoList', 'scripts/viewModels/');
+    fw.viewModel.registerLocation('TodoList', 'scripts/viewModels/');
 
     /**
      * Here we provide the entire filename to footwork because the lowercase
@@ -28,7 +28,7 @@ require(['footwork'],
      * Register the location of the 'MainRouter'
      * Loads from scripts/MainRouter.js
      */
-    fw.routers.registerLocation('MainRouter', 'scripts/');
+    fw.router.registerLocation('MainRouter', 'scripts/');
 
     // tell footwork to startup and begin binding
     fw.start();
