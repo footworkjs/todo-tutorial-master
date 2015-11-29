@@ -1,6 +1,6 @@
 define(['footwork'],
   function(fw) {
-    return fw.viewModel({
+    return fw.viewModel.create({
       namespace: 'TodoItem',
       initialize: function(thingToDo) {
         // get the username from the MainRouter so we can use it in the GUID

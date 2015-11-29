@@ -1,6 +1,6 @@
 define(['footwork'],
   function(fw) {
-    return fw.viewModel({
+    return fw.viewModel.create({
       namespace: 'Footer',
       initialize: function() {
         // create the namespace 'channel' we will use to talk to the TodoList
