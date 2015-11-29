@@ -1,6 +1,6 @@
 define(['footwork', 'scripts/viewModels/TodoItem.js'],
   function(fw, TodoItem) {
-    return fw.viewModel({
+    return fw.viewModel.create({
       namespace: 'TodoList',
       initialize: function() {
         var self = this; // create a reference to this viewModel we can use inside of the callback
