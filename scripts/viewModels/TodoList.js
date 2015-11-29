@@ -1,4 +1,4 @@
-var TodoList = fw.viewModel({
+var TodoList = fw.viewModel.create({
   namespace: 'TodoList',
   autoRegister: true,
   initialize: function() {

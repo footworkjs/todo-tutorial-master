@@ -1,4 +1,4 @@
-var TodoItem = fw.viewModel({
+var TodoItem = fw.viewModel.create({
   namespace: 'TodoItem',
   initialize: function(thingToDo) {
     // store the string text entered by user as thingToDo
