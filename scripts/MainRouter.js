@@ -35,7 +35,7 @@ define(['footwork'],
             this.loggedInUser(null);
 
             // show our login page here
-            this.$outlet('mainView', 'login-page');
+            this.outlet('mainView', 'login-page');
           }
         },
         {
@@ -46,7 +46,7 @@ define(['footwork'],
             this.loggedInUser(username);
 
             // show our todo list page here
-            this.$outlet('mainView', 'todo-page');
+            this.outlet('mainView', 'todo-page');
           }
         }
       ]
