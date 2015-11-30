@@ -8547,7 +8547,7 @@ fw.bindingHandlers.$bind = {
     if( isRouter($parentRouter) ) {
       // register this outlet with the router so that updates will propagate correctly
       // take the observable returned and define it on the outletViewModel so that outlet route changes are reflected in the view
-      outletViewModel.$route = $parentRouter.$outlet( outletName );
+      outletViewModel.$route = $parentRouter.outlet( outletName );
     } else {
       throw new Error('Outlet [' + outletName + '] defined inside of viewModel [' + $parentViewModel.getNamespaceName() + '] but no router was defined.');
     }
@@ -8731,8 +8731,8 @@ var Router = function( routerConfig, $viewModel, $context ) {
   });
 
   this.outlets = {};
-  this.$outlet = $routerOutlet.bind(this);
-  this.$outlet.reset = function() {
+  this.outlet = $routerOutlet.bind(this);
+  this.outlet.reset = function() {
     each( this.outlets, function(outlet) {
       outlet({ name: noComponentSelected, params: {} });
     });
@@ -8971,7 +8971,7 @@ Router.prototype.getRouteForURL = function(url) {
 
 function DefaultAction() {
   delete this.__currentRouteDescription;
-  this.$outlet.reset();
+  this.outlet.reset();
 }
 
 function RoutedAction(routeDescription) {
