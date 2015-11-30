@@ -30,9 +30,13 @@ branches["loadingTodos"]="pre-existing todo entries now being loaded from localS
 OUTPUTDIR="/sites/todo-tutorial-master-output"
 SCRATCHDIR="/sites/todo-tutorial-master-scratch"
 
-MASTERREPO=git+ssh://git@github.com/footworkjs/todo-tutorial-master.git
-# DESTREPO=git+ssh://git@github.com/footworkjs/todo-tutorial.git
-DESTREPO=git+ssh://git@github.com:jonbnewman/automated-push.git
+PROTO=git+ssh://
+
+MASTERREPOADDR=git@github.com/footworkjs/todo-tutorial-master.git
+DESTREPOADDR=git@github.com:footworkjs/todo-tutorial.git
+
+MASTERREPO=${PROTO}${MASTERREPOADDR}
+DESTREPO=${PROTO}${DESTREPOADDR}
 
 ################################################################################
 # NOTE: You are generally intended to run these actions in order from top down #
@@ -141,9 +145,9 @@ else
   if [ "$1" == "gotoDestination" ]; then
     MASTERDIR="${SCRATCHDIR}/master"
 
-    # clone/prepare destination repository
+    # prepare destination repository
     rm -rf ${OUTPUTDIR}/master
-    git clone ${DESTREPO} ${OUTPUTDIR}/master
+    mkdir -p ${OUTPUTDIR}/master
 
     # copy in latest ('never changing') assets to the master branch
     cp -af ${MASTERDIR}/bower.json ${OUTPUTDIR}/master
@@ -155,39 +159,47 @@ else
 
     # commit and push to master
     cd ${OUTPUTDIR}/master
+    git init
     git add -A .
     git commit -a -m "Initial commit with base assets/files..."
-    git push
+    git remote add origin ${DESTREPOADDR}
+    git push -u origin master
 
+    PREVBRANCH="master"
     # checkout the branches using master copy in assets commit and push
     for i in "${!branches[@]}"
     do
       BRANCH=$i
       COMMITMESSAGE=${branches[$i]}
 
-      echo "Checking out/creating ${BRANCH} from the destination repo"
+      echo "Creating ${BRANCH} from repo: ${PREVBRANCH}"
       rm -rf ${OUTPUTDIR}/${BRANCH}
-      cp -a ${OUTPUTDIR}/master ${OUTPUTDIR}/${BRANCH}
+      cp -a ${OUTPUTDIR}/${PREVBRANCH} ${OUTPUTDIR}/${BRANCH}
       cd ${OUTPUTDIR}/${BRANCH}
       git checkout -b ${BRANCH}
 
       echo "Copying in code from master repo branch to destination repo branch"
-      cp -a ${SCRATCHDIR}/${BRANCH}/* ${OUTPUTDIR}/${BRANCH}
+      cp -af ${SCRATCHDIR}/${BRANCH}/* ${OUTPUTDIR}/${BRANCH}
 
       echo "Commiting and pushing ${BRANCH} (${COMMITMESSAGE})"
       cd ${OUTPUTDIR}/${BRANCH}
       git add -A .
       git commit -a -m "${COMMITMESSAGE}"
-      git push
+      git push --set-upstream origin ${BRANCH}
+
+      PREVBRANCH=${BRANCH}
     done
   fi
 
   if [ "$1" == "prepForHttp" ]; then
     for i in "${!branches[@]}"
     do
-      echo "Preparing $branch..."
-      cd ${branch}
-      sed -i.bak "s/'\/'/'\/${branch}'/g" scripts/app.js
+      BRANCH=$i
+      COMMITMESSAGE=${branches[$i]}
+      
+      echo "Preparing $BRANCH..."
+      cd ${OUTPUTDIR}/${BRANCH}
+      sed -i.bak "s/'\/'/'\/${BRANCH}'/g" scripts/app.js
       rm -f scripts/app.js.bak
       cd ..
     done
