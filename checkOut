@@ -1,52 +1,189 @@
 #!/bin/bash
 
-declare -a branches=("master" "setup" "baseApplication" "creatingTodos" "components" "amd" "routerConfiguration" "routerUsage" "createOutlet" "creatingViews" "changingOutlet" "manipulatingRoute" "routeBinding" "headerViewModel" "usernameDisplay" "logoutRendering" "completingTodo" "markAllTodo" "deletingTodo" "footerViewModel" "renderNumTodos" "clearingCompletedTodos" "filteringTheList" "savingTodos" "loadingTodos")
-cd public
+declare -A branches
+branches["setup"]="created/added base assets and HTML"
+branches["baseApplication"]="created base application code"
+branches["creatingTodos"]="can now create todo entries"
+branches["components"]="converted todoform into a component"
+branches["amd"]="application now uses amd to load dependencies"
+branches["routerConfiguration"]="added base MainRouter and 2 route definitions"
+branches["routerUsage"]="added router wrapper and registered router with footwork"
+branches["createOutlet"]="replaced body content with outlet"
+branches["creatingViews"]="created the two primary views and the LoginForm viewModel"
+branches["changingOutlet"]="now rendering the login page"
+branches["manipulatingRoute"]="now switching to the todo page when a user clicks login"
+branches["routeBinding"]="added logout button"
+branches["headerViewModel"]="wrapped the header with a viewModel"
+branches["usernameDisplay"]="now displaying username in header"
+branches["logoutRendering"]="now rendering logout button only when on todo page"
+branches["completingTodo"]="can now complete a todo entry"
+branches["markAllTodo"]="can now mark all todo entries"
+branches["deletingTodo"]="can now delete a todo entry"
+branches["footerViewModel"]="wrapped footer with a viewModel"
+branches["renderNumTodos"]="now rendering the number of remaining todo entries in the footer"
+branches["clearingCompletedTodos"]="can now clear completed todo entries"
+branches["filteringTheList"]="can now filter the todo list" 
+branches["savingTodos"]="todo entries now being saved to localStorage"
+branches["loadingTodos"]="pre-existing todo entries now being loaded from localStorage"
 
-BASEDIR=`pwd`
+# MUST be full path
+OUTPUTDIR="/sites/todo-tutorial-master-output"
+SCRATCHDIR="/sites/todo-tutorial-master-scratch"
 
-if [ $# -gt 0 ]; then
+MASTERREPO=git+ssh://git@github.com/footworkjs/todo-tutorial-master.git
+# DESTREPO=git+ssh://git@github.com/footworkjs/todo-tutorial.git
+DESTREPO=git+ssh://git@github.com:jonbnewman/automated-push.git
+
+################################################################################
+# NOTE: You are generally intended to run these actions in order from top down #
+################################################################################
+
+if [ $# -eq 0 ]; then
+  echo "You must provide an action to perform."
+else
+  # remove the local master repo branches
   if [ "$1" == "clean" ]; then
-    # remove the branches
-    for branch in "${branches[@]}"
+    if [ -d "${SCRATCHDIR}" ]; then
+      for i in "${!branches[@]}"
+      do
+        BRANCH=$i
+        COMMITMESSAGE=${branches[$i]}
+
+        echo "Cleaning ${BRANCH} (${COMMITMESSAGE})"
+        rm -rf ${SCRATCHDIR}/${BRANCH}
+      done
+      rm -rf ${SCRATCHDIR}/master
+    fi
+    rm -rf ${OUTPUTDIR}
+  fi
+
+  # This will checkout all of the branches from the master repo into the SCRATCHDIR
+  if [ "$1" == "checkout" ]; then
+    # clone/prepare master repository
+    rm -rf ${SCRATCHDIR}/master
+    git clone ${MASTERREPO} ${SCRATCHDIR}/master
+
+    # checkout the branches
+    for i in "${!branches[@]}"
     do
-      echo "$branch"
-      rm -rf ${branch}
+      BRANCH=$i
+      COMMITMESSAGE=${branches[$i]}
+
+      echo "Checkout ${BRANCH}"
+      rm -rf ${SCRATCHDIR}/${BRANCH}
+      cp -a ${SCRATCHDIR}/master ${SCRATCHDIR}/${BRANCH}
+      cd ${SCRATCHDIR}/${BRANCH}
+      git checkout ${BRANCH}
+      echo ""
     done
   fi
 
-  if [ "$1" == "commit" ]; then
+  # This will sync the css/misc assets from master:master
+  if [ "$1" == "syncAssets" ]; then
+    MASTERDIR="${SCRATCHDIR}/master"
+    for i in "${!branches[@]}"
+    do
+      BRANCH=$i
+      COMMITMESSAGE=${branches[$i]}
+
+      BRANCHDIR="${SCRATCHDIR}/${BRANCH}"
+      echo "Syncing master assets into ${BRANCHDIR}"
+
+      rm -rf ${BRANCHDIR}/bower.json ${BRANCHDIR}/bower_components ${BRANCHDIR}/css ${BRANCHDIR}/images ${BRANCHDIR}/.gitignore ${BRANCHDIR}/README.md
+      cp -af ${MASTERDIR}/bower.json ${BRANCHDIR}
+      cp -af ${MASTERDIR}/bower_components ${BRANCHDIR}
+      cp -af ${MASTERDIR}/css ${BRANCHDIR}
+      cp -af ${MASTERDIR}/images ${BRANCHDIR}
+      cp -af ${MASTERDIR}/.gitignore ${BRANCHDIR}
+      cp -af ${MASTERDIR}/README.md ${BRANCHDIR}
+
+      cd ${BRANCHDIR}; git add -A .
+    done
+  fi
+
+  # This will commit the latest master branches (template branches)
+  if [ "$1" == "commitMaster" ]; then
     if [ $# -ne 2 ]; then
       echo "Must include a commit message"
       exit
     fi
 
-    for branch in "${branches[@]}"
+    for i in "${!branches[@]}"
     do
-      if [ "${branch}" != "master" ]; then
-        MESSAGE=$2
-        echo "Committing ($branch): \"${MESSAGE}\""
-        cd ${branch}
-        git commit -a -m "${MESSAGE}"
-        cd ..
-      fi
+      BRANCH=$i
+      COMMITMESSAGE=${branches[$i]}
+
+      MESSAGE=$2
+      echo "Committing to master repo ($BRANCH): \"${MESSAGE}\""
+      cd ${SCRATCHDIR}/${BRANCH}
+      git commit -a -m "${MESSAGE}"
+      cd ..
+      echo ""
     done
   fi
 
-  if [ "$1" == "push" ]; then
-    for branch in "${branches[@]}"
+  # This will push the staged commits for the master branches
+  if [ "$1" == "pushMaster" ]; then
+    for i in "${!branches[@]}"
     do
-      if [ "${branch}" != "master" ]; then
-        echo "Pushing ($branch)"
-        cd ${branch}
-        git push
-        cd ..
-      fi
+      BRANCH=$i
+      COMMITMESSAGE=${branches[$i]}
+
+      echo "Pushing ($BRANCH) to master repo..."
+      cd ${SCRATCHDIR}/${BRANCH}
+      git push
+      cd ..
+      echo ""
+    done
+  fi
+
+  # This generate the destination branches, commit and push on the DESTREPO
+  if [ "$1" == "gotoDestination" ]; then
+    MASTERDIR="${SCRATCHDIR}/master"
+
+    # clone/prepare destination repository
+    rm -rf ${OUTPUTDIR}/master
+    git clone ${DESTREPO} ${OUTPUTDIR}/master
+
+    # copy in latest ('never changing') assets to the master branch
+    cp -af ${MASTERDIR}/bower.json ${OUTPUTDIR}/master
+    cp -af ${MASTERDIR}/bower_components ${OUTPUTDIR}/master
+    cp -af ${MASTERDIR}/css ${OUTPUTDIR}/master
+    cp -af ${MASTERDIR}/images ${OUTPUTDIR}/master
+    cp -af ${MASTERDIR}/.gitignore ${OUTPUTDIR}/master
+    cp -af ${MASTERDIR}/README.md ${OUTPUTDIR}/master
+
+    # commit and push to master
+    cd ${OUTPUTDIR}/master
+    git add -A .
+    git commit -a -m "Initial commit with base assets/files..."
+    git push
+
+    # checkout the branches using master copy in assets commit and push
+    for i in "${!branches[@]}"
+    do
+      BRANCH=$i
+      COMMITMESSAGE=${branches[$i]}
+
+      echo "Checking out/creating ${BRANCH} from the destination repo"
+      rm -rf ${OUTPUTDIR}/${BRANCH}
+      cp -a ${OUTPUTDIR}/master ${OUTPUTDIR}/${BRANCH}
+      cd ${OUTPUTDIR}/${BRANCH}
+      git checkout -b ${BRANCH}
+
+      echo "Copying in code from master repo branch to destination repo branch"
+      cp -a ${SCRATCHDIR}/${BRANCH}/* ${OUTPUTDIR}/${BRANCH}
+
+      echo "Commiting and pushing ${BRANCH} (${COMMITMESSAGE})"
+      cd ${OUTPUTDIR}/${BRANCH}
+      git add -A .
+      git commit -a -m "${COMMITMESSAGE}"
+      git push
     done
   fi
 
   if [ "$1" == "prepForHttp" ]; then
-    for branch in "${branches[@]}"
+    for i in "${!branches[@]}"
     do
       echo "Preparing $branch..."
       cd ${branch}
@@ -55,46 +192,4 @@ if [ $# -gt 0 ]; then
       cd ..
     done
   fi
-
-  if [ "$1" == "syncAssets" ]; then
-    MDIR="${BASEDIR}/master"
-    for branch in "${branches[@]}"
-    do
-      if [ "${branch}" != "master" ]; then
-        BDIR="${BASEDIR}/${branch}"
-        echo "Syncing master assets into $branch..."
-
-        rm -rf ${BDIR}/bower.json ${BDIR}/bower_components ${BDIR}/css ${BDIR}/images ${BDIR}/.gitignore ${BDIR}/README.md
-        cp -af ${MDIR}/bower.json ${BDIR}
-        cp -af ${MDIR}/bower_components ${BDIR}
-        cp -af ${MDIR}/css ${BDIR}
-        cp -af ${MDIR}/images ${BDIR}
-        cp -af ${MDIR}/.gitignore ${BDIR}
-        cp -af ${MDIR}/README.md ${BDIR}
-
-        cd ${BDIR}; git add -A .; cd ..
-      fi
-    done
-  fi
-
-  exit
 fi
-
-REPO=git+ssh://git@github.com/reflectiveSingleton/todo-tutorial-master.git
-
-# clone/prepare master repository
-rm -rf master
-git clone ${REPO} master
-
-# checkout the branches
-for branch in "${branches[@]}"
-do
-  if [ "${branch}" != "master" ]; then
-    echo "$branch"
-    rm -rf ${branch}
-    cp -a master ${branch}
-    cd ${branch}
-    git checkout ${branch}
-    cd ..
-  fi
-done
